@@ -1,14 +1,32 @@
 package logingui;
 
 
+import admingui.AdminDashboard;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Image;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import staffgui.StaffDashboard;
 
 public class LoginPage extends JFrame {
+    
+    private JPanel leftPanel;
+    private JLabel welcomeLabel;
+    private JLabel usernameLabel;
+    private JTextField usernameTF;
+    private JPasswordField passwordTF;
+    private JLabel passwordLabel;
+    private JButton loginButton;
+    private JButton registerAsAdminButton;
+    private JPanel rightPanel;
+    
+    private String tempUser = "user";
+    private String tempPass = "password";
+    private String role = "STAFF";
+       
 
     public LoginPage() {
         setSize(700, 400);
@@ -16,34 +34,60 @@ public class LoginPage extends JFrame {
         setTitle("Login");
         setLayout(null);
         
-        JPanel leftPanel = new JPanel();
+        leftPanel = new JPanel();
         leftPanel.setBackground(new Color(214, 217, 223));
         leftPanel.setBounds(334, 0, 350, 361);
         
         leftPanel.setLayout(null);
 //        leftPanel.setBackground(Color.red);
         
-        JLabel welcomeLabel = new JLabel("Welcome Back!");
+        welcomeLabel = new JLabel("Welcome Back!");
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         welcomeLabel.setBounds(0, 25, 350, 30);
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 25));
         
-        JLabel usernameLabel = new JLabel("Username");
+        usernameLabel = new JLabel("Username");
         usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         usernameLabel.setBounds(40, 120, 90, 20);
         
-        JTextField usernameTF = new JTextField();
+        usernameTF = new JTextField();
         usernameTF.setBounds(40, 145, 270, 30);
         
-        JLabel passwordLabel = new JLabel("Password");
+        passwordLabel = new JLabel("Password");
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         passwordLabel.setBounds(40, 200, 90, 20);
-        JPasswordField passwordTF = new JPasswordField();
+        
+        passwordTF = new JPasswordField();
         passwordTF.setBounds(40, 225, 270, 30);
         
-        JButton loginButton = new JButton("Login");
+        loginButton = new JButton("Login");
         loginButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         loginButton.setBounds(130, 280, 80, 30 );
+        loginButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		
+        		if(!isFieldsValid()) {
+                            JOptionPane.showMessageDialog(LoginPage.this, "Missing fields. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        
+                        String enteredUsername = usernameTF.getText();
+                        String enteredPassword = passwordTF.getText();
+                        
+                        if(tempUser.equals(enteredUsername) && tempPass.equals(enteredPassword)) {
+                            
+                            dispose();
+                            if (role.equals("ADMIN")) {
+                                AdminDashboard adminDashboard = new AdminDashboard();
+                                adminDashboard.setVisible(true);
+                            } else {
+                                StaffDashboard staffDashboard = new StaffDashboard();
+                                staffDashboard.setVisible(true);
+                            }
+                        }
+                        
+        	}
+        });
         
         leftPanel.add(welcomeLabel);
         leftPanel.add(usernameLabel);
@@ -53,7 +97,7 @@ public class LoginPage extends JFrame {
         leftPanel.add(passwordTF);
         leftPanel.add(loginButton);
    
-        JButton registerAsAdminButton = new JButton("Register as Admin?");
+        registerAsAdminButton = new JButton("Register as Admin?");
         registerAsAdminButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		
@@ -68,9 +112,15 @@ public class LoginPage extends JFrame {
         registerAsAdminButton.setBounds(100, 320, 150, 30);
         leftPanel.add(registerAsAdminButton);
         
-        JPanel rightLabel = new JPanel();
+        JLabel rightLabel = new JLabel();
         rightLabel.setBounds(0, 0, 334, 361);
         rightLabel.setBackground(Color.red);
+        
+        ImageIcon iconImage = new ImageIcon("D:\\Users\\Rhem Giou\\Downloads\\SALVADOR_AT1F Score.png");
+        Image originalImage = iconImage.getImage();
+        Image scaledImage = originalImage.getScaledInstance(rightLabel.getWidth(), rightLabel.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+        rightLabel.setIcon(scaledImageIcon);
         
         add(leftPanel);
         add(rightLabel);
@@ -95,5 +145,9 @@ public class LoginPage extends JFrame {
                 new LoginPage().setVisible(true);
             }
         });
+    }
+    
+    private boolean isFieldsValid() {
+        return !(usernameTF.getText().isEmpty() || passwordTF.getText().isEmpty());
     }
 }

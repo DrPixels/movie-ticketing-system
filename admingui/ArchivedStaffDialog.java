@@ -88,7 +88,6 @@ public class ArchivedStaffDialog extends JDialog {
 		textField.setBounds(789, 78, 190, 30);
 		
 		add(titlePanel);
-		add(staffMainPanel);
 		add(scrollPane);
 		add(searchLabel);
 		add(textField);

@@ -65,6 +65,7 @@ public class StaffDashboard extends JFrame {
 		leftDashboardPanel.add(helloLabel);
 		
 		JButton bookingButton = new JButton("Booking");
+                bookingButton.setFocusable(false);
 		bookingButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		bookingButton.setBorder(UIManager.getBorder("Button.border"));
 		bookingButton.setForeground(new Color(255, 255, 255));
@@ -73,7 +74,7 @@ public class StaffDashboard extends JFrame {
 		leftDashboardPanel.add(bookingButton);
 		
 		JButton bookingHistoryButton = new JButton("Booking History");
-
+                bookingHistoryButton.setFocusable(false);
 		bookingHistoryButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		bookingHistoryButton.setForeground(new Color(255, 255, 255));
 		bookingHistoryButton.setBackground(new Color(15, 23, 42));

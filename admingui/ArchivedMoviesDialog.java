@@ -45,13 +45,13 @@ public class ArchivedMoviesDialog extends JDialog {
 	}
 
 	public ArchivedMoviesDialog() {
-        setBounds(100, 100, 1000, 685);
+        setBounds(100, 100, 1175, 685);
         getContentPane().setLayout(null);
 
         titlePanel = new JPanel();
         titlePanel.setForeground(Color.WHITE);
         titlePanel.setBackground(new Color(249, 115, 22));
-        titlePanel.setBounds(0, 0, 985, 40);
+        titlePanel.setBounds(0, 0, 1159, 40);
         titlePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
         listOfArchiveStaffLabel = new JLabel("LIST OF ARCHIVED MOVIES");
@@ -74,23 +74,23 @@ public class ArchivedMoviesDialog extends JDialog {
 
         // Add scroll pane for the staffMainPanel
         scrollPane = new JScrollPane(staffMainPanel);
-        scrollPane.setBounds(70, 120, 840, 515);
+        scrollPane.setBounds(20, 120, 1120, 515);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         // Search label and text field
         searchLabel = new JLabel("Search:");
         searchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        searchLabel.setBounds(665, 85, 52, 25);
+        searchLabel.setBounds(875, 85, 50, 25);
 
         searchMovieTF = new JTextField();
         searchMovieTF.setColumns(10);
-        searchMovieTF.setBounds(720, 79, 190, 30);
+        searchMovieTF.setBounds(930, 80, 190, 30);
         
-        add(titlePanel);
-        add(scrollPane);
-        add(searchLabel);
-        add(searchMovieTF);
+        getContentPane().add(titlePanel);
+        getContentPane().add(scrollPane);
+        getContentPane().add(searchLabel);
+        getContentPane().add(searchMovieTF);
 
     }
 	

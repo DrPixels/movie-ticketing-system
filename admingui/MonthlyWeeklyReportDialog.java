@@ -1,5 +1,6 @@
 package admingui;
 
+import helper.Helper;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import java.awt.Font;
@@ -23,9 +24,9 @@ public class MonthlyWeeklyReportDialog extends JDialog {
 	private JComboBox date1YearComboBox;
 	private JLabel fromLabel;
 	private JLabel toLabel;
-	private JComboBox date2MonthComboBox;
-	private JComboBox date2DayComboBox;
-	private JComboBox date2YearComboBox;
+	private JComboBox<String> date2MonthComboBox;
+	private JComboBox<Integer> date2DayComboBox;
+	private JComboBox<Integer> date2YearComboBox;
 	private JPanel dailyReportMainPanel;
 
 
@@ -45,14 +46,19 @@ public class MonthlyWeeklyReportDialog extends JDialog {
 		setBounds(100, 100, 995, 600);
 		setLayout(null);
 		
-		date1MonthComboBox = new JComboBox();
+		date1MonthComboBox = new JComboBox<>(new String[]{
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        });
 		date1MonthComboBox.setBounds(440, 55, 100, 25);
 		
-		date1DayComboBox = new JComboBox();
+		date1DayComboBox = new JComboBox<>();
 		date1DayComboBox.setBounds(550, 55, 50, 25);
 		
-		date1YearComboBox = new JComboBox();
+		date1YearComboBox = new JComboBox<>();
 		date1YearComboBox.setBounds(610, 55, 60, 25);
+                
+                Helper.setupDateComboBoxes(date1MonthComboBox, date1DayComboBox, date1YearComboBox);
 		
 		fromLabel = new JLabel("From:");
 		fromLabel.setForeground(Color.WHITE);
@@ -64,14 +70,19 @@ public class MonthlyWeeklyReportDialog extends JDialog {
 		toLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 13));
 		toLabel.setBounds(700, 60, 30, 20);
 		
-		date2MonthComboBox = new JComboBox();
+		date2MonthComboBox = new JComboBox<>(new String[]{
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        });
 		date2MonthComboBox.setBounds(735, 55, 100, 25);
 		
-		date2DayComboBox = new JComboBox();
+		date2DayComboBox = new JComboBox<>();
 		date2DayComboBox.setBounds(845, 55, 50, 25);	
 		
-		date2YearComboBox = new JComboBox();
+		date2YearComboBox = new JComboBox<>();
 		date2YearComboBox.setBounds(905, 55, 60, 25);	
+                
+                Helper.setupDateComboBoxes(date2MonthComboBox, date2DayComboBox, date2YearComboBox);
 		
 		dailyReportMainPanel = new JPanel();
 		dailyReportMainPanel.setLayout(null);

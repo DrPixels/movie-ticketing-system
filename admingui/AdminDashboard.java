@@ -68,6 +68,7 @@ public class AdminDashboard extends JFrame {
 		manageMoviesButton.setForeground(new Color(255, 255, 255));
 		manageMoviesButton.setBackground(new Color(17, 24, 39));
 		manageMoviesButton.setBounds(20, 220, 160, 25);
+                manageMoviesButton.setFocusable(false);
 		leftDashboardPanel.add(manageMoviesButton);
 		
 		JButton reportsButton = new JButton("Reports");
@@ -75,6 +76,7 @@ public class AdminDashboard extends JFrame {
 		reportsButton.setForeground(new Color(255, 255, 255));
 		reportsButton.setBackground(new Color(17, 24, 39));
 		reportsButton.setBounds(20, 260, 160, 25);
+                reportsButton.setFocusable(false);
 		leftDashboardPanel.add(reportsButton);
 		
 		JButton manageStaffButton = new JButton("Manage Staff");
@@ -82,6 +84,7 @@ public class AdminDashboard extends JFrame {
 		manageStaffButton.setForeground(new Color(255, 255, 255));
 		manageStaffButton.setBackground(new Color(17, 24, 39));
 		manageStaffButton.setBounds(20, 300, 160, 25);
+                manageStaffButton.setFocusable(false);
 		leftDashboardPanel.add(manageStaffButton);
 		
 		JButton aboutButton = new JButton("About");
@@ -89,6 +92,7 @@ public class AdminDashboard extends JFrame {
 		aboutButton.setForeground(new Color(255, 255, 255));
 		aboutButton.setBackground(new Color(17, 24, 39));
 		aboutButton.setBounds(20, 340, 160, 25);
+                aboutButton.setFocusable(false);
 		leftDashboardPanel.add(aboutButton);
 		
 		JButton logoutButton = new JButton("Logout");
@@ -105,6 +109,7 @@ public class AdminDashboard extends JFrame {
 		logoutButton.setForeground(new Color(255, 255, 255));
 		logoutButton.setBackground(new Color(17, 24, 39));
 		logoutButton.setBounds(20, 400, 160, 25);
+                logoutButton.setFocusable(false);
 		leftDashboardPanel.add(logoutButton);
 		
 		JPanel logoPanel = new JPanel();

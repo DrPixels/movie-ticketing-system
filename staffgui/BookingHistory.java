@@ -77,7 +77,7 @@ public class BookingHistory extends JPanel {
     	
     	receiptPanel = new JPanel();
     	receiptPanel.setBorder(new LineBorder(new Color(255, 81, 90), 2));
-    	receiptPanel.setBounds(320, 190, 325, 375);
+    	receiptPanel.setBounds(320, 190, 325, 390);
     	receiptPanel.setLayout(null);
     	
     	receiptTitlePanel = new JPanel();
@@ -173,7 +173,7 @@ public class BookingHistory extends JPanel {
     	receiptPanel.add(showTime);
     	
     	blackPanel = new JPanel();
-    	blackPanel.setBounds(0, 345, 325, 30);
+    	blackPanel.setBounds(0, 360, 325, 30);
     	receiptPanel.add(blackPanel);
     	blackPanel.setBackground(new Color(0, 0, 0));
     	
@@ -193,13 +193,25 @@ public class BookingHistory extends JPanel {
     	modifyBookingButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
     	modifyBookingButton.setBorder(UIManager.getBorder("Button.border"));
     	modifyBookingButton.setBackground(new Color(55, 65, 81));
-    	modifyBookingButton.setBounds(495, 576, 150, 35);
+    	modifyBookingButton.setBounds(495, 590, 150, 35);
     	
     	add(enterBookTransacIdLabel);
     	add(enterBookTransacIdTF);
     	add(searchButton);
     	add(titlePanel);
     	add(receiptPanel);
+    	
+    	JLabel seatsLabel = new JLabel("Seats:");
+    	seatsLabel.setForeground(Color.BLACK);
+    	seatsLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    	seatsLabel.setBounds(10, 320, 90, 20);
+    	receiptPanel.add(seatsLabel);
+    	
+    	JLabel seats = new JLabel("A1, B2");
+    	seats.setForeground(Color.BLACK);
+    	seats.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    	seats.setBounds(110, 320, 205, 20);
+    	receiptPanel.add(seats);
     	add(modifyBookingButton);
     }
 }
