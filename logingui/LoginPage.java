@@ -1,6 +1,11 @@
 package logingui;
 
 
+import Database.AuthenticateDatabaseManager;
+import Database.DatabaseManager;
+import Model.Authentication;
+import Model.AuthenticationStatus;
+import Model.Credential;
 import admingui.AdminDashboard;
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -71,20 +76,31 @@ public class LoginPage extends JFrame {
                             return;
                         }
                         
-                        String enteredUsername = usernameTF.getText();
-                        String enteredPassword = passwordTF.getText();
+                        String username = usernameTF.getText();
+                        String password = passwordTF.getText();
+                        Credential credential = new Credential(username, password);
+                        AuthenticationStatus authentication = AuthenticateDatabaseManager.verifyAuthentication(credential);
                         
-                        if(tempUser.equals(enteredUsername) && tempPass.equals(enteredPassword)) {
-                            
-                            dispose();
-                            if (role.equals("ADMIN")) {
-                                AdminDashboard adminDashboard = new AdminDashboard();
-                                adminDashboard.setVisible(true);
-                            } else {
-                                StaffDashboard staffDashboard = new StaffDashboard();
-                                staffDashboard.setVisible(true);
-                            }
+                        if(!authentication.isStatus()) {
+                            JOptionPane.showMessageDialog(LoginPage.this, "Invalid Credentials. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                            return;
                         }
+                        
+                        Authentication.CURRENTLY_LOGIN_USER_ID = authentication.getUserId();
+                        
+                        if(authentication.getRole().equals("ADMIN")) {
+                            dispose();
+                            
+                            AdminDashboard adminDashboard = new AdminDashboard();
+                            adminDashboard.setVisible(true);
+                        } else {
+                            dispose();
+                            
+                            StaffDashboard staffDashboard = new StaffDashboard();
+                            staffDashboard.setVisible(true);
+                        }
+                        
+                        
                         
         	}
         });
@@ -124,7 +140,6 @@ public class LoginPage extends JFrame {
         
         add(leftPanel);
         add(rightLabel);
-        
         
     }
         

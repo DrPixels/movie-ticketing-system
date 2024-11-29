@@ -1,5 +1,6 @@
 package admingui;
 
+import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,7 +9,6 @@ import java.awt.event.ActionListener;
 public class ManageMovies extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    JFrame parent;
     
     private JScrollPane scrollPane;
     private JPanel mainPanel;
@@ -56,8 +56,7 @@ public class ManageMovies extends JPanel {
 
     private JPanel emptyMoviePanel;
 
-    public ManageMovies(JFrame parent) {
-    	this.parent = parent;
+    public ManageMovies() {
     	
     	setLayout(null);
     	
@@ -96,7 +95,7 @@ public class ManageMovies extends JPanel {
                 // Create a custom dialog
             	ArchivedMoviesDialog archivedMoviesDialog = new ArchivedMoviesDialog();
 
-            	archivedMoviesDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+            	archivedMoviesDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	archivedMoviesDialog.setVisible(true);
             }
         });
@@ -251,7 +250,7 @@ public class ManageMovies extends JPanel {
                 // Create a custom dialog
             	UpdateMovieDialog updateMovieDialog = new UpdateMovieDialog();
 
-            	updateMovieDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+            	updateMovieDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	updateMovieDialog.setVisible(true);
             }
         });
@@ -310,7 +309,7 @@ public class ManageMovies extends JPanel {
                 // Create a custom dialog
             	AddMovieDialog addMovieDialog = new AddMovieDialog();
 
-            	addMovieDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+            	addMovieDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	addMovieDialog.setVisible(true);
             }
         });

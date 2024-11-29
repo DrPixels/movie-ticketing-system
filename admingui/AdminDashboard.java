@@ -1,4 +1,8 @@
 package admingui;
+import Database.AdminDatabaseManager;
+import Model.AdminUser;
+import Model.Authentication;
+import helper.Helper;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -15,6 +19,11 @@ import javax.swing.UIManager;
 import logingui.LoginPage;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.ImageIcon;
 
 
 public class AdminDashboard extends JFrame {
@@ -25,7 +34,8 @@ public class AdminDashboard extends JFrame {
 	private JPanel leftDashboardPanel;
 	private JPanel rightDashboardPanel;
 	
-
+        private AdminUser adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_USER_ID);
+        
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -51,11 +61,18 @@ public class AdminDashboard extends JFrame {
 		leftDashboardPanel.setBounds(0, 0, 200, 711);
 		leftDashboardPanel.setLayout(null);
 		
-		JPanel profilePicturePanel = new JPanel();
-		profilePicturePanel.setBounds(45, 20, 110, 110);
-		leftDashboardPanel.add(profilePicturePanel);
+		JLabel profilePictureLabel = new JLabel();
+		profilePictureLabel.setBounds(45, 20, 110, 110);
+                profilePictureLabel.setPreferredSize(new Dimension(110, 110));
+		leftDashboardPanel.add(profilePictureLabel);
+                
+                ImageIcon iconImage = new ImageIcon(adminData.getPicturePath());
+                Image originalImage = iconImage.getImage();
+                Image scaledImage = originalImage.getScaledInstance(profilePictureLabel.getWidth(), profilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
+                ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                profilePictureLabel.setIcon(scaledImageIcon);
 		
-		JLabel helloLabel = new JLabel("Hello, Name!");
+		JLabel helloLabel = new JLabel("Hello, " + adminData.getFirstName());
 		helloLabel.setForeground(new Color(255, 255, 255));
 		helloLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 14));
 		helloLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -86,15 +103,54 @@ public class AdminDashboard extends JFrame {
 		manageStaffButton.setBounds(20, 300, 160, 25);
                 manageStaffButton.setFocusable(false);
 		leftDashboardPanel.add(manageStaffButton);
+                
+                JButton editProfileButton = new JButton("Edit Profile");
+		editProfileButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		editProfileButton.setForeground(new Color(255, 255, 255));
+		editProfileButton.setBackground(new Color(17, 24, 39));
+		editProfileButton.setBounds(20, 340, 160, 25);
+                editProfileButton.setFocusable(false);
+		leftDashboardPanel.add(editProfileButton);
+                
+                editProfileButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Create a custom dialog
+                        EditAdminProfileDialog editAdminProfileDialog = new EditAdminProfileDialog();
+
+                        editAdminProfileDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
+                        editAdminProfileDialog.setVisible(true);
+                        
+                        // Add a WindowListener to monitor disposal events
+                        editAdminProfileDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                System.out.println("hey");
+                                adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_USER_ID);
+                                
+                                ImageIcon iconImage = new ImageIcon(adminData.getPicturePath());
+                                Image originalImage = iconImage.getImage();
+                                Image scaledImage = originalImage.getScaledInstance(profilePictureLabel.getWidth(), profilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
+                                ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                                profilePictureLabel.setIcon(scaledImageIcon);
+                                
+                                helloLabel.setText("Hello, " + adminData.getFirstName());
+                                
+                                leftDashboardPanel.revalidate();
+                                leftDashboardPanel.repaint();
+                            }
+                        });
+                    }
+                });
 		
 		JButton aboutButton = new JButton("About");
 		aboutButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		aboutButton.setForeground(new Color(255, 255, 255));
 		aboutButton.setBackground(new Color(17, 24, 39));
-		aboutButton.setBounds(20, 340, 160, 25);
+		aboutButton.setBounds(20, 380, 160, 25);
                 aboutButton.setFocusable(false);
 		leftDashboardPanel.add(aboutButton);
-		
+                
 		JButton logoutButton = new JButton("Logout");
 		logoutButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -108,7 +164,7 @@ public class AdminDashboard extends JFrame {
 		logoutButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		logoutButton.setForeground(new Color(255, 255, 255));
 		logoutButton.setBackground(new Color(17, 24, 39));
-		logoutButton.setBounds(20, 400, 160, 25);
+		logoutButton.setBounds(20, 440, 160, 25);
                 logoutButton.setFocusable(false);
 		leftDashboardPanel.add(logoutButton);
 		
@@ -123,7 +179,7 @@ public class AdminDashboard extends JFrame {
 		rightCardLayout = new CardLayout();
 		rightDashboardPanel.setLayout(rightCardLayout);
 		
-		JPanel manageMovies = new ManageMovies(this);
+		JPanel manageMovies = new ManageMovies();
 		manageMoviesButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rightCardLayout.show(rightDashboardPanel, "Manage Movies"); // Show Movies panel
@@ -132,7 +188,7 @@ public class AdminDashboard extends JFrame {
 			}
 		});
 		
-		JPanel manageStaff = new ManageStaff(this);
+		JPanel manageStaff = new ManageStaff();
 		manageStaffButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rightCardLayout.show(rightDashboardPanel, "Manage Staff"); // Show Movies panel
@@ -141,7 +197,7 @@ public class AdminDashboard extends JFrame {
 			}
 		});
 		
-		JPanel reports = new Reports(this);
+		JPanel reports = new Reports();
 		reportsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rightCardLayout.show(rightDashboardPanel, "Reports"); // Show Movies panel
@@ -150,7 +206,7 @@ public class AdminDashboard extends JFrame {
 			}
 		});
 		
-		JPanel about = new About(this);
+		JPanel about = new About();
 		aboutButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rightCardLayout.show(rightDashboardPanel, "About"); // Show Movies panel

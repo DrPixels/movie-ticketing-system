@@ -1,5 +1,6 @@
 package admingui;
 
+import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,8 +13,7 @@ import javax.swing.border.TitledBorder;
 public class Reports extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    JFrame parent;
-    
+
     private JPanel titlePanel;
     private JLabel reportsLabel;
     
@@ -42,8 +42,7 @@ public class Reports extends JPanel {
     private JLabel theaterLabel;
     private JPanel dailyReportPanel;
 
-    public Reports(JFrame parent) {
-    	this.parent = parent;
+    public Reports() {
     	
     	setLayout(null);
     	
@@ -143,7 +142,7 @@ public class Reports extends JPanel {
                 // Create a custom dialog
             	MonthlyWeeklyReportDialog monthlyWeeklyReportDialog = new MonthlyWeeklyReportDialog();
 
-            	monthlyWeeklyReportDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+            	monthlyWeeklyReportDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	monthlyWeeklyReportDialog.setVisible(true);
             }
         });

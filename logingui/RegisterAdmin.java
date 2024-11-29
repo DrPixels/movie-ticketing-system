@@ -1,5 +1,7 @@
 package logingui;
 
+import Database.AdminDatabaseManager;
+import Model.AdminUser;
 import helper.Helper;
 import java.awt.EventQueue;
 
@@ -15,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.time.LocalDate;
-import java.time.Month;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
@@ -52,6 +53,7 @@ public class RegisterAdmin extends JFrame {
 	private JLabel ageLabel;
 	private JLabel genderLabel;
 
+        private ButtonGroup genderGroup;
 	private JRadioButton maleRadButton;
 	private JRadioButton femaleRadButton;
 	private JLabel emailLabel;
@@ -62,6 +64,9 @@ public class RegisterAdmin extends JFrame {
 	private JButton registerButton;
 
 	private JButton cancelButton;
+        
+        //More fields
+        private String profilePicturePath = Helper.DEFAULT_PROFILE_PIC_PATH;
 
 
 	public static void main(String[] args) {
@@ -89,7 +94,7 @@ public class RegisterAdmin extends JFrame {
             profilePictureLabel.setBounds(30, 30, 150, 150);
             profilePictureLabel.setPreferredSize(new Dimension(150, 150));
             
-            ImageIcon iconImage = new ImageIcon(Helper.defaultProfilePicPath);
+            ImageIcon iconImage = new ImageIcon(Helper.DEFAULT_PROFILE_PIC_PATH);
             Image originalImage = iconImage.getImage();
             Image scaledImage = originalImage.getScaledInstance(profilePictureLabel.getWidth(), profilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
             ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
@@ -122,7 +127,9 @@ public class RegisterAdmin extends JFrame {
 		int result = fileChooser.showOpenDialog(RegisterAdmin.this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
-			ImageIcon imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
+                        profilePicturePath = selectedFile.getAbsolutePath();
+                        
+			ImageIcon imageIcon = new ImageIcon(profilePicturePath);
 
 			//Scaling the image
 			Image originalImage = imageIcon.getImage();
@@ -202,7 +209,7 @@ public class RegisterAdmin extends JFrame {
             genderLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
             genderLabel.setBounds(235, 230, 80, 20);
             
-            ButtonGroup group = new ButtonGroup();
+            genderGroup = new ButtonGroup();
             
             maleRadButton = new JRadioButton("Male");
             maleRadButton.setForeground(Color.WHITE);
@@ -214,8 +221,8 @@ public class RegisterAdmin extends JFrame {
             femaleRadButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
             femaleRadButton.setBounds(320, 260, 75, 25);
             
-            group.add(maleRadButton);
-            group.add(femaleRadButton);
+            genderGroup.add(maleRadButton);
+            genderGroup.add(femaleRadButton);
 
             emailLabel = new JLabel("Email:");
             emailLabel.setForeground(Color.WHITE);
@@ -264,7 +271,45 @@ public class RegisterAdmin extends JFrame {
         	public void actionPerformed(ActionEvent e) {
                     if(!isFieldsValid()) {
                         JOptionPane.showMessageDialog(RegisterAdmin.this, "Missing fields. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                        return;
                     }
+                    
+                    //For getting the birthday
+                    String year = birthdayYearComboBox.getSelectedItem().toString();
+                    String month = birthdayMonthComboBox.getSelectedItem().toString();
+                    String day = birthdayDayComboBox.getSelectedItem().toString();
+                    String birthdate = month + " " + day + ", " + year;
+                    LocalDate birthday = Helper.dateStringToLocalDate(birthdate);
+                    System.out.println(birthday);
+                       
+                    String picturePath = profilePicturePath;
+                    String firstName = firstNameTF.getText();
+                    String middleName = middleNameTF.getText();
+                    String lastName = lastNameTF.getText();
+                    int age = Integer.parseInt(ageTF.getText());
+                    String gender = Helper.returnWhatisSelectedButton(genderGroup);
+                    String email = emailTF.getText();
+                    String phoneNumber = phoneNumTF.getText();
+                    String username = usernameTF.getText();
+                    String password = passwordTF.getText();
+                    
+                    AdminUser admin = new AdminUser(picturePath, 
+                            firstName, 
+                            middleName, 
+                            lastName, 
+                            birthday, 
+                            age, 
+                            gender, 
+                            email, 
+                            phoneNumber, 
+                            username, 
+                            password);
+                    
+                    if(!AdminDatabaseManager.registerAdmin(admin)) {
+                        JOptionPane.showMessageDialog(RegisterAdmin.this, "Invalid action. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(RegisterAdmin.this, "Your registration was successful. You can login now.", "Successful Action", JOptionPane.WARNING_MESSAGE);
+                    }     
         	}
         });
 
@@ -281,30 +326,7 @@ public class RegisterAdmin extends JFrame {
                     LoginPage loginPage = new LoginPage();
                     loginPage.setVisible(true);
         	}
-             });
-            
-//            ActionListener birthdayComboBoxListener = new ActionListener() {
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    String selectedMonth = (String) birthdayMonthComboBox.getSelectedItem();
-//                    Month month = Month.valueOf(selectedMonth.toUpperCase());
-//                    
-//                    String selectedDay = birthdayDayComboBox.getSelectedItem().toString();
-//                    int day = Integer.parseInt(selectedDay);
-//                    
-//                    String selectedYear = (String) birthdayYearComboBox.getSelectedItem().toString();
-//                    int year = Integer.parseInt(selectedYear);
-//                    
-//                    String age = String.valueOf(Helper.calculateAge(LocalDate.of(year, 
-//                            month, 
-//                            day)));
-//                    ageTF.setText(age);
-//                }
-//            };
-//            
-//            birthdayMonthComboBox.addActionListener(birthdayComboBoxListener);
-//            birthdayDayComboBox.addActionListener(birthdayComboBoxListener);
-//            birthdayYearComboBox.addActionListener(birthdayComboBoxListener);
+             });   
 
             add(profilePictureLabel);
             add(uploadProfPicButton);

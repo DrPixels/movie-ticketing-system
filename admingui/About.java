@@ -7,7 +7,6 @@ import javax.swing.border.LineBorder;
 public class About extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    JFrame parent;
     
     private JLabel systemName;
     private JLabel systemDefinition;
@@ -23,8 +22,7 @@ public class About extends JPanel {
     private JLabel salvadorName;
 
 
-    public About(JFrame parent) {
-    	this.parent = parent;
+    public About() {
     	setLayout(null);
     	
     	systemName = new JLabel("CineBook");

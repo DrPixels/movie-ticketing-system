@@ -1,18 +1,33 @@
 package helper;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Helper {
     
-    public static final String defaultProfilePicPath = "D:\\Users\\Rhem Giou\\Downloads\\java pics\\default_profile_picture.png";
+    public static final String DEFAULT_PROFILE_PIC_PATH = "\"D:\\MovieTicketingSystem\\defaultPictures\\default_profile_picture.png\"";
+    
+        // Method to get the currently active frame
+    public static JFrame getCurrentFrame() {
+        Frame[] frames = Frame.getFrames();  // Get all frames
+        for (Frame frame : frames) {
+            if (frame.isVisible()) {
+                return (JFrame) frame;  // Return the first visible frame
+            }
+        }
+        return null;  // No frame is visible
+    }
     
 // Method to set up the dynamic day JComboBox and set the current date
+    //Including the age to update textfield
    public static void setupDateComboBoxes(JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox, JComboBox<Integer> yearComboBox) {
     // Populate the yearComboBox (if needed)
     if (yearComboBox.getItemCount() == 0) {
@@ -20,14 +35,14 @@ public class Helper {
             yearComboBox.addItem(year);
         }
     }
-
-    // Get the current date
+    
+//    // Get the current date
     LocalDate currentDate = LocalDate.now();
     int currentYear = currentDate.getYear();
     int currentMonth = currentDate.getMonthValue() - 1; // Month is 0-based in JComboBox
     int currentDay = currentDate.getDayOfMonth();
-
-    // Set the selected values in the JComboBoxes
+//
+//    // Set the selected values in the JComboBoxes
     monthComboBox.setSelectedIndex(currentMonth);
     yearComboBox.setSelectedItem(currentYear);
     updateDays(dayComboBox, currentMonth, currentYear);
@@ -45,20 +60,26 @@ public class Helper {
     yearComboBox.addActionListener(updateDaysListener);
 }
 
-    // Function to update the day JComboBox based on the number of days
     private static void updateDays(JComboBox<Integer> dayComboBox, int month, int year) {
-        dayComboBox.removeAllItems();
-        int daysInMonth = getDaysInMonth(month, year);
-        for (int i = 1; i <= daysInMonth; i++) {
-            dayComboBox.addItem(i);
-        }
+       int previouslySelectedDay = (dayComboBox.getSelectedItem() != null) ? (int) dayComboBox.getSelectedItem() : 1;
 
-        // Ensure the selected day is valid in the new month
-        int selectedDay = (int) dayComboBox.getSelectedItem();
-        if (selectedDay > daysInMonth) {
-            dayComboBox.setSelectedItem(daysInMonth); // If the selected day is not valid, select the last valid day
-        }
-    }
+       dayComboBox.removeAllItems();  // Clear existing days
+
+       int daysInMonth = getDaysInMonth(month, year);
+
+       // Repopulate with the correct number of days
+       for (int i = 1; i <= daysInMonth; i++) {
+           dayComboBox.addItem(i);
+       }
+
+       // Set the previously selected day if still valid, otherwise select the last valid day
+       if (previouslySelectedDay > daysInMonth) {
+           dayComboBox.setSelectedItem(daysInMonth);
+       } else {
+           dayComboBox.setSelectedItem(previouslySelectedDay);
+       }
+   }
+
 
 // Function to determine the number of days in a month
 private static int getDaysInMonth(int month, int year) {
@@ -84,29 +105,24 @@ private static int getDaysInMonth(int month, int year) {
         return period.getYears();
     }
     
-//    public static void setScaledImage(JLabel label, ImageIcon icon) {
-//        //For scaling the file
-//		int profPicLabelWidth = label.getWidth();
-//		int profPicLabelHeight = label.getHeight();
-//
-//		//Open as model dialog
-//		JFileChooser fileChooser = new JFileChooser();
-//
-//		//Filtering the file based on their file extensions
-//		fileChooser.setFileFilter(new FileNameExtensionFilter("jpg/png/gif", "jpg", "png", "gif"));
-//
-//		int result = fileChooser.showOpenDialog(AddProductPanel.this);
-//		if (result == JFileChooser.APPROVE_OPTION) {
-//			File selectedFile = fileChooser.getSelectedFile();
-//			ImageIcon imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
-//
-//			//Scaling the image
-//			Image originalImage = imageIcon.getImage();
-//			Image scaledImage = originalImage.getScaledInstance(profPicLabelWidth, profPicLabelHeight, Image.SCALE_SMOOTH);
-//			ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
-//			productPicture.setIcon(scaledImageIcon);
-//			productPicture.putClientProperty("imagePath", selectedFile.getAbsolutePath());
-//		}
-//    }
+    public static String returnWhatisSelectedButton(ButtonGroup buttonGroup) {
+        for (AbstractButton button : java.util.Collections.list(buttonGroup.getElements())) {
+                        if (button.isSelected()) {
+                               return button.getText();
+                        }
+        }
+        
+        return "0";
+    }
+    
+    public static LocalDate dateStringToLocalDate(String dateString) {
+        
+        // Define a formatter matching the input date pattern
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
+
+        // Parse the date string into a LocalDate object
+        return LocalDate.parse(dateString, formatter);
+    }
+    
     
 }

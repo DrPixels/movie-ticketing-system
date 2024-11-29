@@ -1,5 +1,6 @@
 package admingui;
 
+import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,8 +13,6 @@ public class ManageStaff extends JPanel {
 
     private static final long serialVersionUID = 1L;
     
-    JFrame parent;
-    
     private JScrollPane scrollPane;
     private JPanel titlePanel;
     private JPanel staffMainPanel;
@@ -24,8 +23,7 @@ public class ManageStaff extends JPanel {
     private JButton restoreStaffButton;
     
 
-    public ManageStaff(JFrame parent) {
-    	this.parent = parent;
+    public ManageStaff() {
     	
     	setLayout(null);
     	
@@ -64,7 +62,7 @@ public class ManageStaff extends JPanel {
                 // Create a custom dialog
             	AddStaffDialog addStaffDialog = new AddStaffDialog();
 
-            	addStaffDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+            	addStaffDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	addStaffDialog.setVisible(true);
             }
         });
@@ -89,7 +87,7 @@ public class ManageStaff extends JPanel {
                 // Create a custom dialog
             	ArchivedStaffDialog archiveStaffDialog = new ArchivedStaffDialog();
 
-            	archiveStaffDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+            	archiveStaffDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	archiveStaffDialog.setVisible(true);
             }
     	});
@@ -138,7 +136,7 @@ public class ManageStaff extends JPanel {
                 // Create a custom dialog
             	EditStaffDialog editStaffDialog = new EditStaffDialog();
 
-            	editStaffDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+            	editStaffDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	editStaffDialog.setVisible(true);
             }
         });

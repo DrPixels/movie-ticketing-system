@@ -41,6 +41,7 @@ public class StaffDashboard extends JFrame {
 	}
 
 	public StaffDashboard() {
+            
 		setResizable(false);
 		setTitle("Staff's Dashboard");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
