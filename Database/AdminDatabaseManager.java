@@ -753,4 +753,86 @@ public class AdminDatabaseManager extends DatabaseManager{
         
     }
     
+    public static boolean archiveMovie(String movieId) {
+        String archiveMovieQuery = "UPDATE movies SET is_archived = ? WHERE movie_id = ? ";
+        String removeMovieFromTheater = "UPDATE theaters SET movie_id = ? WHERE movie_id = ? ";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(archiveMovieQuery);
+            
+            prepSt.setBoolean(1, true);
+            prepSt.setString(2, movieId);
+            
+            prepSt.executeUpdate();
+            
+            PreparedStatement prepSt2 = connection.prepareStatement(removeMovieFromTheater);
+            
+            prepSt2.setString(1, null);
+            prepSt2.setString(2, movieId);
+            
+            prepSt2.executeUpdate();
+
+            return true;
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return false;
+    }
+    
+    public static ArrayList<Movie> retrieveArchivedMovies() {
+        
+        String retrieveArchiveMoviesQuery = "SELECT * FROM movies WHERE is_archived = 1";
+        
+        ArrayList<Movie> archivedMovies = new ArrayList<>();
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(retrieveArchiveMoviesQuery);
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            while(rs.next()) {
+                String retrievedMovieId = rs.getString("movie_id");
+                Blob moviePoster = rs.getBlob("movie_poster_picture");
+//                String path = "D:\\MovieTicketingSystem\\adminstaffpics\\" + employeeId + ".jpg";
+                String path = rs.getString("movie_poster_picture_path");
+                byte[] bytes = moviePoster.getBytes(1, (int)moviePoster.length());
+                FileOutputStream fos = new FileOutputStream(path);
+                fos.write(bytes);
+                
+                String movieName = rs.getString("movie_name");
+                float moviePrice = rs.getFloat("movie_price");
+                String movieGenre1 = rs.getString("movie_genre_1");
+                String movieGenre2 = rs.getString("movie_genre_2");
+                int duration = rs.getInt("duration_total_minutes");
+                String contentRating = rs.getString("content_rating");
+                
+                ArrayList<Showtime> showtimes = retrieveMovieShowtimesById(retrievedMovieId);
+                    
+                archivedMovies.add(new Movie(retrievedMovieId,path, movieName, moviePrice, movieGenre1, movieGenre2, duration, contentRating, showtimes));
+            }
+
+
+            return archivedMovies;
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } catch (FileNotFoundException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } catch (IOException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return null;
+        
+    }
+    
 }

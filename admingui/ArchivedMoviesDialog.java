@@ -1,5 +1,8 @@
 package admingui;
 
+import Database.AdminDatabaseManager;
+import Model.Movie;
+import helper.Helper;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
@@ -15,8 +18,11 @@ import java.awt.Dimension;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.ImageIcon;
 
 import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
@@ -32,7 +38,8 @@ public class ArchivedMoviesDialog extends JDialog {
 	private JScrollPane scrollPane;
 	private JLabel searchLabel;
 	private JTextField searchMovieTF;
-
+        
+        private ArrayList<Movie> archivedMovies = AdminDatabaseManager.retrieveArchivedMovies();
 
 	public static void main(String[] args) {
 		try {
@@ -67,10 +74,11 @@ public class ArchivedMoviesDialog extends JDialog {
         staffMainPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         staffMainPanel.setPreferredSize(new Dimension(800, 1000));
         
-        for (int i = 0; i < 3; i++) {
-            JPanel newPanel = createMoviePanel();
+        for (Movie archivedMovie: archivedMovies) {
+            JPanel newPanel = createMoviePanel(archivedMovie);
             staffMainPanel.add(newPanel);
         }
+  
 
         // Add scroll pane for the staffMainPanel
         scrollPane = new JScrollPane(staffMainPanel);
@@ -94,75 +102,94 @@ public class ArchivedMoviesDialog extends JDialog {
 
     }
 	
-	private JPanel createMoviePanel() {
-        JPanel moviePanel = new JPanel();
-        moviePanel.setBackground(new Color(214, 217, 223));
-       	moviePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-//        moviePanel.setBounds(100, 6, 350, 327);
-       	moviePanel.setPreferredSize(new Dimension(350,327));
-        moviePanel.setLayout(null);
-        
-        JLabel moviePosterPanel = new JLabel();
-        moviePosterPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-        moviePosterPanel.setBounds(20, 20, 125, 175);  
-        
-        JButton restoreStaffButton = new JButton("Restore");
-        restoreStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        restoreStaffButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
-        });
+	private JPanel createMoviePanel(Movie archivedMovie) {
+            JPanel moviePanel = new JPanel();
+            moviePanel.setBackground(new Color(214, 217, 223));
+            moviePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+    //        moviePanel.setBounds(100, 6, 350, 327);
+            moviePanel.setPreferredSize(new Dimension(350,327));
+            moviePanel.setLayout(null);
 
-        restoreStaffButton.setBounds(225, 290, 115, 25);    
-        
-        JTextArea movieTitle = new JTextArea();
-        movieTitle.setOpaque(false);
-        movieTitle.setText("Black to the Future Black to the Future Black to the Future Black to the Future Black to the Future ");
-        movieTitle.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        movieTitle.setLineWrap(true);
-        movieTitle.setWrapStyleWord(true);
-        movieTitle.setBounds(155, 20, 185, 40);
-        
-        JLabel moviePrice = new JLabel("₱ 4500.50");
-        moviePrice.setFont(new Font("Segoe UI", Font.ITALIC, 12));
-        moviePrice.setBounds(155, 70, 185, 14);    
-        
-        JLabel movieGenre = new JLabel("Horror, Comedy");
-        movieGenre.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        movieGenre.setBounds(155, 95, 185, 14);
-        
-        JLabel movieDuration = new JLabel("3hr 1min");
-        movieDuration.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        movieDuration.setBounds(155, 120, 185, 14);
-        
-        JLabel movieContentRating = new JLabel("Rated 18");
-        movieContentRating.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        movieContentRating.setBounds(155, 145, 185, 14);
-        
-        JLabel showtime1 = new JLabel("November 24, 2024 03:00 PM");
-        showtime1.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
-        showtime1.setBounds(20, 205, 320, 14);
-        
-        JLabel showtime2 = new JLabel("November 24, 2024 03:00 PM");
-        showtime2.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
-        showtime2.setBounds(20, 225, 320, 14);  
-        
-        JLabel showtime3 = new JLabel("November 24, 2024 03:00 PM");
-        showtime3.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
-        showtime3.setBounds(20, 245, 320, 14);   
-        
-        moviePanel.add(moviePosterPanel);
-        moviePanel.add(restoreStaffButton); 
-        moviePanel.add(movieTitle);
-        moviePanel.add(moviePrice);
-        moviePanel.add(movieGenre);
-        moviePanel.add(movieDuration);
-        moviePanel.add(movieContentRating);
-        moviePanel.add(showtime1);
-        moviePanel.add(showtime2);
-        moviePanel.add(showtime3);
-        
-        return moviePanel;
+            JLabel moviePosterLabel = new JLabel();
+            moviePosterLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
+            moviePosterLabel.setBounds(20, 20, 125, 175);  
+            moviePosterLabel.setPreferredSize(new Dimension(125, 175));
+            
+            ImageIcon iconImage = new ImageIcon(archivedMovie.getMoviePosterPicturePath());
+            Image originalImage = iconImage.getImage();
+            Image scaledImage = originalImage.getScaledInstance(moviePosterLabel.getWidth(), moviePosterLabel.getHeight(), Image.SCALE_SMOOTH);
+            ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+            moviePosterLabel.setIcon(scaledImageIcon);
+
+
+            JButton restoreStaffButton = new JButton("Restore");
+            restoreStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            restoreStaffButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                    }
+            });
+
+            restoreStaffButton.setBounds(225, 290, 115, 25);    
+
+            JTextArea movieTitle = new JTextArea();
+            movieTitle.setOpaque(false);
+            movieTitle.setText(archivedMovie.getMovieName());
+            movieTitle.setFont(new Font("Segoe UI", Font.BOLD, 13));
+            movieTitle.setLineWrap(true);
+            movieTitle.setWrapStyleWord(true);
+            movieTitle.setBounds(155, 20, 185, 40);
+
+            JLabel moviePrice = new JLabel("₱ " + archivedMovie.getMoviePrice());
+            moviePrice.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+            moviePrice.setBounds(155, 70, 185, 14);    
+
+            String genres = (archivedMovie.getMovieGenre2() == null) ? archivedMovie.getMovieGenre1() : archivedMovie.getMovieGenre1() + ", " + archivedMovie.getMovieGenre2();
+            JLabel movieGenre = new JLabel(genres);
+            movieGenre.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            movieGenre.setBounds(155, 95, 185, 14);
+
+            JLabel movieDuration = new JLabel(String.valueOf(archivedMovie.getDuration()));
+            movieDuration.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            movieDuration.setBounds(155, 120, 185, 14);
+
+            JLabel movieContentRating = new JLabel(archivedMovie.getContentRating());
+            movieContentRating.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            movieContentRating.setBounds(155, 145, 185, 14);
+            
+            String showDateStr = Helper.convertLocalDateToString(archivedMovie.getShowtimes().get(0).getShowDateTime().toLocalDate());
+            String showtime1Str = Helper.getFormattedTime(archivedMovie.getShowtimes().get(0).getShowDateTime().toLocalTime());
+            JLabel showtime1 = new JLabel(showDateStr + " " + showtime1Str);
+            showtime1.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
+            showtime1.setBounds(20, 205, 320, 14);
+
+            String showtime2Str = "";
+                if(archivedMovie.getShowtimes().size() - 1 >= 1 ) {
+                   showtime2Str = showDateStr + " " + Helper.getFormattedTime(archivedMovie.getShowtimes().get(1).getShowDateTime().toLocalTime());
+                }
+            JLabel showtime2 = new JLabel(showtime2Str);
+            showtime2.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
+            showtime2.setBounds(20, 225, 320, 14);  
+
+            String showtime3Str = "";
+                if(archivedMovie.getShowtimes().size() - 1 >= 1 ) {
+                   showtime3Str = showDateStr + " " + Helper.getFormattedTime(archivedMovie.getShowtimes().get(2).getShowDateTime().toLocalTime());
+                }
+            JLabel showtime3 = new JLabel(showtime3Str);
+            showtime3.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
+            showtime3.setBounds(20, 245, 320, 14);   
+
+            moviePanel.add(moviePosterLabel);
+            moviePanel.add(restoreStaffButton); 
+            moviePanel.add(movieTitle);
+            moviePanel.add(moviePrice);
+            moviePanel.add(movieGenre);
+            moviePanel.add(movieDuration);
+            moviePanel.add(movieContentRating);
+            moviePanel.add(showtime1);
+            moviePanel.add(showtime2);
+            moviePanel.add(showtime3);
+
+            return moviePanel;
     }
 
 }

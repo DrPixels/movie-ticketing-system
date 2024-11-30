@@ -213,13 +213,13 @@ public class ManageMovies extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         
-                        int response = JOptionPane.showConfirmDialog(null, "Do you want to continue?", "Choose an Option", JOptionPane.YES_NO_OPTION);
+                        int response = JOptionPane.showConfirmDialog(null, "Do you want to continue?", "Archive Movie", JOptionPane.YES_NO_OPTION);
                    
                         if (response == JOptionPane.YES_OPTION) {
-                            System.out.println("User chose Yes");
-                        } else if (response == JOptionPane.NO_OPTION) {
-                            System.out.println("User chose No");
-                        }
+                            AdminDatabaseManager.archiveMovie(theaterMovie.getMovieId());
+                            mainPanel.removeAll();
+                            
+                        } 
                     }
                 });
 		
@@ -343,9 +343,11 @@ public class ManageMovies extends JPanel {
                             @Override
                             public void windowClosed(WindowEvent e) {
                              mainPanel.removeAll();
-                             theatersData = AdminDatabaseManager.retrieveTheaterData();
-                             addTheatersDataToPanel(theatersData);
+                             ArrayList<Theater> newTheatersData  = AdminDatabaseManager.retrieveTheaterData();
+                             addTheatersDataToPanel(newTheatersData);
                              
+                             revalidate();
+                             repaint();
                             
                             }
                         });
