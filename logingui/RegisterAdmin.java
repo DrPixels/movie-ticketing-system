@@ -1,7 +1,7 @@
 package logingui;
 
 import Database.AdminDatabaseManager;
-import Model.AdminUser;
+import Model.AdminEmployee;
 import helper.Helper;
 import java.awt.EventQueue;
 
@@ -293,7 +293,7 @@ public class RegisterAdmin extends JFrame {
                     String username = usernameTF.getText();
                     String password = passwordTF.getText();
                     
-                    AdminUser admin = new AdminUser(picturePath, 
+                    AdminEmployee admin = new AdminEmployee(picturePath, 
                             firstName, 
                             middleName, 
                             lastName, 

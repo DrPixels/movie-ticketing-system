@@ -86,7 +86,7 @@ public class LoginPage extends JFrame {
                             return;
                         }
                         
-                        Authentication.CURRENTLY_LOGIN_USER_ID = authentication.getUserId();
+                        Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID = authentication.getEmployeeId();
                         
                         if(authentication.getRole().equals("ADMIN")) {
                             dispose();

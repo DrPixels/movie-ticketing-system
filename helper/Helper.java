@@ -1,19 +1,55 @@
 package helper;
 
+import Model.Showtime;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Helper {
     
-    public static final String DEFAULT_PROFILE_PIC_PATH = "\"D:\\MovieTicketingSystem\\defaultPictures\\default_profile_picture.png\"";
+    public static final String DEFAULT_PROFILE_PIC_PATH = "D:\\MovieTicketingSystem\\defaultPictures\\default_profile_picture.png";
+    public static final String DEFAULT_MOVIE_POSTER_PATH = "D:\\MovieTicketingSystem\\defaultPictures\\default_movie_poster.png";
+    
+    public static final String[] MONTHS = {"January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        };
+    
+    public static final String[] GENRES = {
+            "Select Genre",
+            "Action", 
+            "Adventure", 
+            "Comedy", 
+            "Drama", 
+            "Horror", 
+            "Science Fiction", 
+            "Fantasy", 
+            "Romance", 
+            "Thriller", 
+            "Mystery", 
+            "Animation", 
+            "Documentary", 
+            "Musical", 
+            "Western", 
+            "Biographical", 
+            "War", 
+            "Family", 
+            "Crime", 
+            "Historical", 
+            "Experimental"
+        };
+    
+    public static final String[] RATINGS = {
+            "G", "PG", "PG-13", "R", "NC-17"
+        };
     
         // Method to get the currently active frame
     public static JFrame getCurrentFrame() {
@@ -26,12 +62,31 @@ public class Helper {
         return null;  // No frame is visible
     }
     
+        // Function to set up time JComboBoxes
+    public static void setUpTimeComboBoxes(JComboBox<String> hoursComboBox,
+                                           JComboBox<String> minutesComboBox,
+                                           JComboBox<String> amPmComboBox) {
+        // Populate hours (1 to 12)
+        for (int i = 1; i <= 12; i++) {
+            hoursComboBox.addItem(String.format("%02d", i));
+        }
+
+        // Populate minutes (00 to 59)
+        for (int i = 0; i < 60; i++) {
+            minutesComboBox.addItem(String.format("%02d", i));
+        }
+
+        // Populate AM/PM options
+        amPmComboBox.addItem("AM");
+        amPmComboBox.addItem("PM");
+    }
+    
 // Method to set up the dynamic day JComboBox and set the current date
     //Including the age to update textfield
    public static void setupDateComboBoxes(JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox, JComboBox<Integer> yearComboBox) {
     // Populate the yearComboBox (if needed)
     if (yearComboBox.getItemCount() == 0) {
-        for (int year = 1970; year <= 2024; year++) {
+        for (int year = 1970; year <= 2040; year++) {
             yearComboBox.addItem(year);
         }
     }
@@ -124,5 +179,79 @@ private static int getDaysInMonth(int month, int year) {
         return LocalDate.parse(dateString, formatter);
     }
     
+        // Method to convert string times to LocalDateTime
+    public static ArrayList<LocalDateTime> convertStringsToLocalDateTimes(ArrayList<String> startTimesStr) {
+        ArrayList<LocalDateTime> startTimes = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy h:mm a"); // Format: "November 3, 2024 3:30 PM"
+        
+        for (String startTimeStr : startTimesStr) {
+            startTimes.add(LocalDateTime.parse(startTimeStr, formatter));
+        }
+        
+        return startTimes;
+    }
+    
+    public static ArrayList<Showtime> convertLocalDateTimesToShowtimes(ArrayList<String> startTimesStr) {
+        ArrayList<LocalDateTime> startTimes = convertStringsToLocalDateTimes(startTimesStr);
+        
+        ArrayList<Showtime> showtimes = new ArrayList<>();
+        
+        for (LocalDateTime startTime : startTimes) {
+            showtimes.add(new Showtime(startTime));
+        }
+        
+        return showtimes;
+    }
+    
+    public static ArrayList<Showtime> convertLocalDateTimesToShowtimes(ArrayList<String> startTimesStr, String showtimeId) {
+        ArrayList<LocalDateTime> startTimes = convertStringsToLocalDateTimes(startTimesStr);
+        
+        ArrayList<Showtime> showtimes = new ArrayList<>();
+        
+        for (LocalDateTime startTime : startTimes) {
+            showtimes.add(new Showtime(showtimeId,startTime));
+        }
+        
+        return showtimes;
+    }
+        
+    public static boolean checkConflicts(List<LocalDateTime> startTimes, int duration) {
+        // List to store the end times of all showtimes
+        List<LocalDateTime> endTimes = new ArrayList<>();
+        
+        // Calculate the end times for each showtime and check for conflicts
+        for (LocalDateTime startTime : startTimes) {
+            // Calculate end time for the current showtime
+            LocalDateTime endTime = startTime.plusMinutes(duration);
+            
+            // Check if the current showtime conflicts with any of the previous showtimes
+            for (LocalDateTime existingEndTime : endTimes) {
+                if (startTime.isBefore(existingEndTime)) {
+                    // Conflict found if the new start time is before the existing end time
+                    return true;
+                }
+            }
+            
+            // Add the end time of the current showtime to the list
+            endTimes.add(endTime);
+        }
+        
+        // No conflicts found
+        return false;
+    }
+    
+    public static String getFormattedTime(LocalTime time) {
+        // Format the time into "hh:mm a" format (12-hour with AM/PM)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+        return time.format(formatter);  // E.g., "03:45 PM"
+    }
+    
+    public static String convertLocalDateToString(LocalDate date) {
+        // Define the output format ("MMMM dd, yyyy")
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+        
+        // Format the LocalDate object to the desired string format
+        return date.format(outputFormatter);
+    }
     
 }

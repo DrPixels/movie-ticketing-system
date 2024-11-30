@@ -1,7 +1,7 @@
 package admingui;
 
 import Database.AdminDatabaseManager;
-import Model.AdminUser;
+import Model.AdminEmployee;
 import Model.Authentication;
 import helper.Helper;
 import javax.swing.JButton;
@@ -31,7 +31,7 @@ public class EditAdminProfileDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
         
         //Admin Data
-        private AdminUser adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_USER_ID);
+        private AdminEmployee adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID);
 	
 	private JLabel profilePictureLabel;
 	private JButton uploadProfPicButton;
@@ -304,7 +304,7 @@ public class EditAdminProfileDialog extends JDialog {
                         String username = usernameTF.getText();
                         String password = passwordTF.getText();
 
-                        AdminUser updateAdminData = new AdminUser(Authentication.CURRENTLY_LOGIN_USER_ID, 
+                        AdminEmployee updateAdminData = new AdminEmployee(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID, 
                                 picturePath, 
                                 firstName, 
                                 middleName, 
@@ -321,7 +321,7 @@ public class EditAdminProfileDialog extends JDialog {
                             JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid action. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
                         } else {
                             JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Your information was update successfully.", "Successful Action", JOptionPane.WARNING_MESSAGE);
-                            adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_USER_ID);
+                            adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID);
                             
                             dispose();
                         }     

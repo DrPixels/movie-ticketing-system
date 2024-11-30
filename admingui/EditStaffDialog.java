@@ -168,29 +168,33 @@ public class EditStaffDialog extends JDialog {
 		phoneNumberTF.setColumns(10);
 		phoneNumberTF.setBounds(530, 335, 250, 25);
 		
-		saveStaffButton = new JButton("Save Staff");
-		saveStaffButton.setForeground(Color.WHITE);
-		saveStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		saveStaffButton.setBackground(new Color(255, 81, 90));
-		saveStaffButton.setBounds(774, 515, 150, 35);	
-		
 		usernameLabel = new JLabel("Username:");
 		usernameLabel.setForeground(Color.WHITE);
 		usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		usernameLabel.setBounds(230, 390, 80, 20);
+		add(usernameLabel);
 		
 		usernameTF = new JTextField();
 		usernameTF.setColumns(10);
-		usernameTF.setBounds(230, 415, 250, 25);	
+		usernameTF.setBounds(230, 415, 250, 25);
+		add(usernameTF);
 		
 		passwordLabel = new JLabel("Password:");
 		passwordLabel.setForeground(Color.WHITE);
 		passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		passwordLabel.setBounds(530, 390, 80, 20);	
+		passwordLabel.setBounds(530, 390, 80, 20);
+		add(passwordLabel);
 		
 		passwordTF = new JTextField();
 		passwordTF.setColumns(10);
 		passwordTF.setBounds(530, 415, 250, 25);
+		add(passwordTF);
+		
+		saveStaffButton = new JButton("Save Staff");
+		saveStaffButton.setForeground(Color.WHITE);
+		saveStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+		saveStaffButton.setBackground(new Color(255, 81, 90));
+		saveStaffButton.setBounds(774, 515, 150, 35);
 		
 		add(profilePictureLabel);
 		add(uploadProfPicButton);
@@ -215,10 +219,12 @@ public class EditStaffDialog extends JDialog {
 		add(phoneNumberLabel);
 		add(phoneNumberTF);
 		add(phoneNumberTF);
+		add(saveStaffButton);
 		add(usernameLabel);
 		add(usernameTF);
 		add(passwordLabel);
 		add(passwordTF);
-		add(saveStaffButton);	
+
+		
 	}
 }

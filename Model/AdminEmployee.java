@@ -2,11 +2,11 @@ package Model;
 
 import java.time.LocalDate;
 
-public class AdminUser extends User{ 
+public class AdminEmployee extends Employee{ 
     
     private final String role = "ADMIN";
 
-    public AdminUser(String userId, 
+    public AdminEmployee(String employeeId, 
             String picturePath, 
             String firstName, 
             String middleName, 
@@ -18,10 +18,10 @@ public class AdminUser extends User{
             String phoneNumber, 
             String username, 
             String password) {
-        super(userId, picturePath, firstName, middleName, lastName, birthday, age, gender, email, phoneNumber, username, password);
+        super(employeeId, picturePath, firstName, middleName, lastName, birthday, age, gender, email, phoneNumber, username, password);
     }
     
-        public AdminUser( String picturePath, 
+        public AdminEmployee( String picturePath, 
             String firstName, 
             String middleName, 
             String lastName, 

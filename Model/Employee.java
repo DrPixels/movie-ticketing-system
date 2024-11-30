@@ -2,9 +2,9 @@ package Model;
 
 import java.time.LocalDate;
 
-public class User {
+public class Employee {
     // Fields
-    private String userId;
+    private String employeeId;
     private String picturePath;
     private String firstName;
     private String middleName;
@@ -18,10 +18,10 @@ public class User {
     private String password;
 
     // Constructor
-    public User(String userId, String picturePath, String firstName, String middleName, String lastName,
+    public Employee(String employeeId, String picturePath, String firstName, String middleName, String lastName,
                 LocalDate birthday, int age, String gender, String email, String phoneNumber,
                 String username, String password) {
-        this.userId = userId;
+        this.employeeId = employeeId;
         this.picturePath = picturePath;
         this.firstName = firstName;
         this.middleName = middleName;
@@ -36,7 +36,7 @@ public class User {
     }
     
     //For Registration Data
-    public User(String picturePath, String firstName, String middleName, String lastName,
+    public Employee(String picturePath, String firstName, String middleName, String lastName,
                 LocalDate birthday, int age, String gender, String email, String phoneNumber,
                 String username, String password) {
         this.picturePath = picturePath;
@@ -52,12 +52,12 @@ public class User {
         this.password = password;
     }
 
-    // userId
-    public String getUserId() {
-        return userId;
+    // employeeId
+    public String getEmployeeId() {
+        return employeeId;
     }
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 
     // picturePath

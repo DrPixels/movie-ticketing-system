@@ -3,12 +3,12 @@ package Model;
 public class AuthenticationStatus {
   
     private boolean status;
-    private String userId;
+    private String employeeId;
     private String role;
     
-    public AuthenticationStatus(boolean status, String userId, String role) {
+    public AuthenticationStatus(boolean status, String employeeId, String role) {
         this.status = status;
-        this.userId = userId;
+        this.employeeId = employeeId;
         this.role = role;
     }
 
@@ -20,12 +20,12 @@ public class AuthenticationStatus {
         this.status = status;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getEmployeeId() {
+        return employeeId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getRole() {

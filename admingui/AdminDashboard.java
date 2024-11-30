@@ -1,6 +1,6 @@
 package admingui;
 import Database.AdminDatabaseManager;
-import Model.AdminUser;
+import Model.AdminEmployee;
 import Model.Authentication;
 import helper.Helper;
 import java.awt.EventQueue;
@@ -34,7 +34,7 @@ public class AdminDashboard extends JFrame {
 	private JPanel leftDashboardPanel;
 	private JPanel rightDashboardPanel;
 	
-        private AdminUser adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_USER_ID);
+        private AdminEmployee adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID);
         
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -74,7 +74,7 @@ public class AdminDashboard extends JFrame {
 		
 		JLabel helloLabel = new JLabel("Hello, " + adminData.getFirstName());
 		helloLabel.setForeground(new Color(255, 255, 255));
-		helloLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 14));
+		helloLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		helloLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		helloLabel.setBounds(0, 134, 200, 14);
 		leftDashboardPanel.add(helloLabel);
@@ -126,7 +126,7 @@ public class AdminDashboard extends JFrame {
                             @Override
                             public void windowClosed(WindowEvent e) {
                                 System.out.println("hey");
-                                adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_USER_ID);
+                                adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID);
                                 
                                 ImageIcon iconImage = new ImageIcon(adminData.getPicturePath());
                                 Image originalImage = iconImage.getImage();

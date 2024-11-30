@@ -12,7 +12,7 @@ public class AuthenticateDatabaseManager extends DatabaseManager{
         
         connect();
         
-        //Either a user_id if success, otherwise return 0
+        //Either a employee_id if success, otherwise return 0
         String validationReturn = isUserPasswordValid(userCredential);
         if(validationReturn.equals("0")) {
             return new AuthenticationStatus(false, "","");
@@ -24,9 +24,9 @@ public class AuthenticateDatabaseManager extends DatabaseManager{
          
     }
     
-    //Returns user_id if success, otherwise return 0
+    //Returns employee_id if success, otherwise return 0
     private static String isUserPasswordValid(Credential userCredential) {
-        String checkUsernameQuery = "SELECT user_id, password FROM authentication WHERE username = ? LIMIT 1";
+        String checkUsernameQuery = "SELECT employee_id, password FROM authentication WHERE username = ? LIMIT 1";
         
         try (PreparedStatement prepSt = connection.prepareStatement(checkUsernameQuery)) {
             // Execute the query and get results
@@ -39,8 +39,8 @@ public class AuthenticateDatabaseManager extends DatabaseManager{
                 if (!retrievedPassword.equals(userCredential.getPassword())) {
                     return "0";
                 } else {
-                    String retrievedUserId = rs.getString("user_id");
-                    return retrievedUserId;
+                    String retrievedEmployeeId = rs.getString("employee_id");
+                    return retrievedEmployeeId;
                 }
             }
             
@@ -53,18 +53,18 @@ public class AuthenticateDatabaseManager extends DatabaseManager{
         return "0";
     }
     
-    private static String getRole(String userId) {
-        String getUserIDQuery = "SELECT role FROM roles WHERE user_id = ? LIMIT 1";
+    private static String getRole(String employeeId) {
+        String getEmployeeIdQuery = "SELECT role FROM roles WHERE employee_id = ? LIMIT 1";
         
-        try (PreparedStatement prepSt = connection.prepareStatement(getUserIDQuery)) {
+        try (PreparedStatement prepSt = connection.prepareStatement(getEmployeeIdQuery)) {
             // Execute the query and get results
-            prepSt.setString(1, userId);
+            prepSt.setString(1, employeeId);
             ResultSet rs = prepSt.executeQuery();
             
             if(rs.next()) {
-                String retrievedUserId = rs.getString("role");
+                String retrievedEmployeeId = rs.getString("role");
                 
-                return retrievedUserId;
+                return retrievedEmployeeId;
             }
             
             return "0";
