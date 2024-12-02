@@ -30,9 +30,6 @@ public class EditAdminProfileDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
         
-        //Admin Data
-        private AdminEmployee adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID);
-	
 	private JLabel profilePictureLabel;
 	private JButton uploadProfPicButton;
 	
@@ -74,6 +71,8 @@ public class EditAdminProfileDialog extends JDialog {
 	private JButton saveStaffButton;
         
         //More fields
+        //Admin Data
+        private AdminEmployee adminData = AdminDatabaseManager.retrieveAdminDataById(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID);
         private String profilePicturePath = adminData.getPicturePath();
 
 	public static void main(String[] args) {

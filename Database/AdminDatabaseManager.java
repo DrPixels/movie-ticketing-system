@@ -5,6 +5,7 @@ package Database;
 import Model.AdminEmployee;
 import Model.Movie;
 import Model.Showtime;
+import Model.StaffEmployee;
 import Model.Theater;
 import helper.Helper;
 import java.io.File;
@@ -18,11 +19,10 @@ import java.sql.*;
 import java.util.UUID;
 import java.time.*;
 import java.util.ArrayList;
-import javax.swing.JButton;
 
 public class AdminDatabaseManager extends DatabaseManager{
     
-        public static boolean registerAdmin(AdminEmployee admin) {
+    public static boolean registerAdmin(AdminEmployee admin) {
         
         connect();
         
@@ -40,6 +40,36 @@ public class AdminDatabaseManager extends DatabaseManager{
         }
         
         if(!addAdminDataToRoles(employeeId, admin)) {
+            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Error adding admin data to roles. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        return true; 
+    }
+    
+    public static boolean registerStaff(StaffEmployee staff) {
+        
+        connect();
+        
+        //Fix, auto-generated
+        String employeeId = UUID.randomUUID().toString();
+        
+        if(!addStaffDataToEmployees(employeeId, staff)) {
+            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Error adding admin data to employees. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        
+        if(!addStaffDataToAuthentication(employeeId, staff)) {
+            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Error adding admin data to authentication. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        
+        if(!addStaffDataToRoles(employeeId, staff)) {
+            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Error adding admin data to roles. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        
+        if(!addStaffDataToStaffStatus(employeeId)) {
             JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Error adding admin data to roles. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
             return false;
         }
@@ -132,6 +162,113 @@ public class AdminDatabaseManager extends DatabaseManager{
         return false;
     }
     
+    private static boolean addStaffDataToEmployees(String employeeId, StaffEmployee staff) {
+        
+        String registerAdminQuery = "INSERT INTO employees VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(registerAdminQuery);
+            
+            //Convert the photo into InputStream
+            InputStream is = new FileInputStream(new File(staff.getPicturePath()));
+            
+            Date birthDay = Date.valueOf(staff.getBirthday());
+            
+            prepSt.setString(1, employeeId);
+            prepSt.setBlob(2, is);
+            prepSt.setString(3, staff.getPicturePath());
+            prepSt.setString(4, staff.getFirstName());
+            prepSt.setString(5, staff.getMiddleName());
+            prepSt.setString(6, staff.getLastName());
+            prepSt.setDate(7, birthDay);
+            prepSt.setInt(8, staff.getAge());
+            prepSt.setString(9, staff.getGender());
+            prepSt.setString(10, staff.getEmail());
+            prepSt.setString(11, staff.getPhoneNumber());
+            
+            prepSt.executeUpdate();
+            
+            return true;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+        
+    private static boolean addStaffDataToAuthentication(String employeeId, StaffEmployee staff) {
+        
+        String query = "INSERT INTO authentication VALUES(?,?,?)";
+        
+        try{
+
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            
+            prepSt.setString(1, employeeId);
+            prepSt.setString(2, staff.getUsername());
+            prepSt.setString(3, staff.getPassword());
+
+            prepSt.executeUpdate();
+            
+            return true;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        }
+        return false;
+    }
+    
+    private static boolean addStaffDataToRoles(String employeeId, StaffEmployee staff) {
+        
+        String query = "INSERT INTO roles VALUES(?,?)";
+        
+        try{
+
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            
+            prepSt.setString(1, employeeId);
+            prepSt.setString(2, staff.getRole());
+
+            prepSt.executeUpdate();
+            
+            return true;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        }
+        return false;
+    }
+    
+    private static boolean addStaffDataToStaffStatus(String employeeId) {
+        
+        String query = "INSERT INTO staff_status (employee_id) VALUES(?)";
+        
+        try{
+
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            
+            prepSt.setString(1, employeeId);
+
+            prepSt.executeUpdate();
+            
+            return true;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        }
+        return false;
+    }
+    
     public static AdminEmployee retrieveAdminDataById(String employeeId) {
         String query = "SELECT profile_picture, profile_picture_path, first_name, middle_name, last_name, birthday, age, gender, email, phone_number, username, password FROM employees "
                 + "INNER JOIN authentication ON authentication.employee_id = employees.employee_id WHERE employees.employee_id = ?";
@@ -164,6 +301,177 @@ public class AdminDatabaseManager extends DatabaseManager{
                 String password = rs.getString("password");
                 
                 return new AdminEmployee(path, 
+                            firstName, 
+                            middleName, 
+                            lastName, 
+                            birthday, 
+                            age, 
+                            gender, 
+                            email, 
+                            phoneNumber, 
+                            username, 
+                            password); 
+            }
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public static ArrayList<StaffEmployee> retrieveStaffEmployees() {
+        String query = "SELECT * FROM staff_status JOIN employees ON staff_status.employee_id = employees.employee_id JOIN authentication ON authentication.employee_id = staff_status.employee_id JOIN roles ON roles.employee_id = staff_status.employee_id WHERE is_archived = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            prepSt.setBoolean(1, false);
+            
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            ArrayList<StaffEmployee> staffEmployees = new ArrayList<>();
+            
+            if(rs.next()) {
+                String employeeId = rs.getString("employee_id");
+                Blob profilePictureImage = rs.getBlob("profile_picture");
+//                String path = "D:\\MovieTicketingSystem\\adminstaffpics\\" + employeeId + ".jpg";
+                String path = rs.getString("profile_picture_path");
+                byte[] bytes = profilePictureImage.getBytes(1, (int)profilePictureImage.length());
+                FileOutputStream fos = new FileOutputStream(path);
+                fos.write(bytes);
+
+                String firstName = rs.getString("first_name");
+                String middleName = rs.getString("middle_name");
+                String lastName = rs.getString("last_name");
+                LocalDate birthday = rs.getDate("birthday").toLocalDate();
+                int age = rs.getInt("age");
+                String gender = rs.getString("gender");
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phone_number");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                boolean isArchived = rs.getBoolean("is_archived");
+                
+                staffEmployees.add(new StaffEmployee(employeeId,path, 
+                            firstName, 
+                            middleName, 
+                            lastName, 
+                            birthday, 
+                            age, 
+                            gender, 
+                            email, 
+                            phoneNumber, 
+                            username, 
+                            password, isArchived));
+            }
+            
+            return staffEmployees;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
+        return null;
+    }
+    
+        public static ArrayList<StaffEmployee> retrieveArchivedStaffEmployees() {
+        String query = "SELECT * FROM staff_status JOIN employees ON staff_status.employee_id = employees.employee_id JOIN authentication ON authentication.employee_id = staff_status.employee_id JOIN roles ON roles.employee_id = staff_status.employee_id WHERE is_archived = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            prepSt.setBoolean(1, true);
+            
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            ArrayList<StaffEmployee> staffEmployees = new ArrayList<>();
+            
+            if(rs.next()) {
+                String employeeId = rs.getString("employee_id");
+                Blob profilePictureImage = rs.getBlob("profile_picture");
+//                String path = "D:\\MovieTicketingSystem\\adminstaffpics\\" + employeeId + ".jpg";
+                String path = rs.getString("profile_picture_path");
+                byte[] bytes = profilePictureImage.getBytes(1, (int)profilePictureImage.length());
+                FileOutputStream fos = new FileOutputStream(path);
+                fos.write(bytes);
+
+                String firstName = rs.getString("first_name");
+                String middleName = rs.getString("middle_name");
+                String lastName = rs.getString("last_name");
+                LocalDate birthday = rs.getDate("birthday").toLocalDate();
+                int age = rs.getInt("age");
+                String gender = rs.getString("gender");
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phone_number");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                boolean isArchived = rs.getBoolean("is_archived");
+                
+                staffEmployees.add(new StaffEmployee(employeeId,path, 
+                            firstName, 
+                            middleName, 
+                            lastName, 
+                            birthday, 
+                            age, 
+                            gender, 
+                            email, 
+                            phoneNumber, 
+                            username, 
+                            password, isArchived));
+            }
+            
+            return staffEmployees;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
+        return null;
+    }
+    
+    
+    
+    public static StaffEmployee retrieveStaffDataById(String employeeId) {
+        String query = "SELECT * FROM employees "
+                + "INNER JOIN authentication ON authentication.employee_id = employees.employee_id WHERE employees.employee_id = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            
+            prepSt.setString(1, employeeId);
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            if(rs.next()) {
+                Blob profilePictureImage = rs.getBlob("profile_picture");
+//                String path = "D:\\MovieTicketingSystem\\adminstaffpics\\" + employeeId + ".jpg";
+                String path = rs.getString("profile_picture_path");
+                byte[] bytes = profilePictureImage.getBytes(1, (int)profilePictureImage.length());
+                FileOutputStream fos = new FileOutputStream(path);
+                fos.write(bytes);
+
+                String firstName = rs.getString("first_name");
+                String middleName = rs.getString("middle_name");
+                String lastName = rs.getString("last_name");
+                LocalDate birthday = rs.getDate("birthday").toLocalDate();
+                int age = rs.getInt("age");
+                String gender = rs.getString("gender");
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phone_number");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                
+                return new StaffEmployee(employeeId,path, 
                             firstName, 
                             middleName, 
                             lastName, 
@@ -261,6 +569,94 @@ public class AdminDatabaseManager extends DatabaseManager{
             prepSt.setString(1, adminData.getUsername());
             prepSt.setString(2, adminData.getPassword());
             prepSt.setString(3, adminData.getEmployeeId());
+            
+            prepSt.executeUpdate();
+            
+            return true;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        return false;
+    }
+    
+        public static boolean updateStaffDataById(StaffEmployee staffData) {
+        
+        if(!updateStaffDataInEmployees(staffData)) {
+            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Error updating admin data to employees. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        
+        if(!updateStaffDataInAuthentication(staffData)) {
+            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Error updating admin data to employees. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        
+        return true;
+    }
+        
+    private static boolean updateStaffDataInEmployees(StaffEmployee staffData) {
+                String query = "UPDATE employees "
+                + "SET profile_picture = ?, "
+                        + "profile_picture_path = ?, "
+                + "first_name = ?, "
+                + "middle_name = ?, "
+                + "last_name = ?, "
+                + "birthday = ?, "
+                + "age = ?, "
+                + "gender = ?, "
+                + "email = ?, "
+                + "phone_number = ? "
+                        + "WHERE employee_id = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            
+            //Convert the photo into InputStream
+            InputStream is = new FileInputStream(new File(staffData.getPicturePath()));
+            
+            Date birthDay = Date.valueOf(staffData.getBirthday());
+            
+            prepSt.setBlob(1, is);
+            prepSt.setString(2, staffData.getPicturePath());
+            prepSt.setString(3, staffData.getFirstName());
+            prepSt.setString(4, staffData.getMiddleName());
+            prepSt.setString(5, staffData.getLastName());
+            prepSt.setDate(6, birthDay);
+            prepSt.setInt(7, staffData.getAge());
+            prepSt.setString(8, staffData.getGender());
+            prepSt.setString(9, staffData.getEmail());
+            prepSt.setString(10, staffData.getPhoneNumber());
+            prepSt.setString(11, staffData.getEmployeeId());
+            
+            prepSt.executeUpdate();
+            
+            return true;
+
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    private static boolean updateStaffDataInAuthentication(StaffEmployee staffData) {
+                String query = "UPDATE authentication "
+                + "SET username = ?, "
+                + "password = ? "
+                        + "WHERE employee_id = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);       
+            
+            prepSt.setString(1, staffData.getUsername());
+            prepSt.setString(2, staffData.getPassword());
+            prepSt.setString(3, staffData.getEmployeeId());
             
             prepSt.executeUpdate();
             
@@ -834,5 +1230,29 @@ public class AdminDatabaseManager extends DatabaseManager{
         return null;
         
     }
+    
+        public static boolean archiveStaff(String employeeId) {
+        String archiveStaffQuery = "UPDATE staff_status SET is_archived = ? WHERE employee_id = ? ";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(archiveStaffQuery);
+            
+            prepSt.setBoolean(1, true);
+            prepSt.setString(2, employeeId);
+            
+            prepSt.executeUpdate();
+
+            return true;
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return false;
+    }  
+        
     
 }

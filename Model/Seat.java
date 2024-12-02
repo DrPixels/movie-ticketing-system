@@ -5,6 +5,12 @@ public class Seat {
     private String seatId;
     private String seatNumber; //Seat Identifier - A1, B1
     private String status;
+    
+    public Seat(String seatId, String seatNumber, String status) {
+        this.seatId = seatId;
+        this.seatNumber = seatNumber;
+        this.status = status;
+    }
 
     public String getSeatId() {
         return seatId;

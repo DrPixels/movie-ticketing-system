@@ -218,7 +218,8 @@ public class ManageMovies extends JPanel {
                         if (response == JOptionPane.YES_OPTION) {
                             AdminDatabaseManager.archiveMovie(theaterMovie.getMovieId());
                             mainPanel.removeAll();
-                            
+                            theatersData = AdminDatabaseManager.retrieveTheaterData();
+                            addTheatersDataToPanel(theatersData);
                         } 
                     }
                 });

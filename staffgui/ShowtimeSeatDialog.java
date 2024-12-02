@@ -1,7 +1,11 @@
 package staffgui;
 
+import Model.Seat;
+import Model.Showtime;
+import helper.Helper;
 import java.awt.FlowLayout;
 
+import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -14,6 +18,7 @@ import java.awt.GridLayout;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class ShowtimeSeatDialog extends JDialog {
 
@@ -22,9 +27,6 @@ public class ShowtimeSeatDialog extends JDialog {
 	private JPanel theaterPanel;
 	private JLabel theaterLabel;
 	private JLabel showtimesLabel;
-	private JRadioButton showtime1RadButton;
-	private JRadioButton showtime2RadButton;
-	private JRadioButton showtime3RadButton;
 	private JLabel seatsAvailableLabel;
 	private JPanel seatsAvailableMainPanel;
 	private JPanel seatsPanel;
@@ -39,9 +41,18 @@ public class ShowtimeSeatDialog extends JDialog {
 	private JLabel selectedLabel;
 	private JPanel colorSelected;
 	
+	private JPanel showtimesMainPanel;
+	
 	private JButton saveChoiceButton;
-
-
+	
+	private ButtonGroup showtimesBtnGroup = new ButtonGroup();
+        
+        public static ArrayList<Showtime> showtimes;
+        
+        private String selectedShowtimeId;
+        private ArrayList<String> selectedSeatNumbers = new ArrayList<>();
+        private ArrayList<Seat> selectedSeats = new ArrayList<>();
+        
 	public static void main(String[] args) {
 		try {
 			ShowtimeSeatDialog dialog = new ShowtimeSeatDialog();
@@ -82,19 +93,7 @@ public class ShowtimeSeatDialog extends JDialog {
 		showtimesLabel = new JLabel("Showtimes");
 		showtimesLabel.setForeground(Color.WHITE);
 		showtimesLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
-		showtimesLabel.setBounds(10, 40, 175, 20);
-		
-		showtime1RadButton = new JRadioButton("November 24, 2024 09:25 PM");
-		showtime1RadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		showtime1RadButton.setBounds(15, 80, 215, 30);
-		
-		showtime2RadButton = new JRadioButton("November 24, 2024 09:25 PM");
-		showtime2RadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		showtime2RadButton.setBounds(15, 120, 215, 30);;
-		
-		showtime3RadButton = new JRadioButton("November 24, 2024 09:25 PM");
-		showtime3RadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		showtime3RadButton.setBounds(15, 160, 215, 30);
+		showtimesLabel.setBounds(10, 40, 175, 20);;
 		
 		seatsAvailableLabel = new JLabel("Seats Available");
 		seatsAvailableLabel.setForeground(Color.WHITE);
@@ -110,31 +109,31 @@ public class ShowtimeSeatDialog extends JDialog {
 		seatsAvailableMainPanel.add(seatsPanel);
 		seatsPanel.setLayout(new GridLayout(8, 16, 2, 10));
 		
-		for (int row = 1; row <= 8; row++) {
-			for (int col = 1; col <= 16; col++) {
-				
-				String seatLabel = " ";
-				
-				if (col == 5 || col == 12) {
-					seatLabel = "  ";
-				} else if (col <= 4) {
-					seatLabel = (char) ('A' + row - 1) + String.valueOf(col);
-				} else if (col <= 11) {
-					seatLabel = (char) ('A' + row - 1) + String.valueOf(col - 1);
-				} else if (col <= 16) {
-					seatLabel = (char) ('A' + row - 1) + String.valueOf(col - 2);
-				}
-				
-
-				JButton seatButton = new JButton(seatLabel);
-				seatButton.setFocusable(false);
-				if (col == 5 || col == 12) {
-					seatButton.setVisible(false);
-				}
-				seatsPanel.add(seatButton);
-				
-			}
-		}
+//		for (int row = 1; row <= 8; row++) {
+//			for (int col = 1; col <= 16; col++) {
+//				
+//				String seatLabel = " ";
+//				
+//				if (col == 5 || col == 12) {
+//					seatLabel = "  ";
+//				} else if (col <= 4) {
+//					seatLabel = (char) ('A' + row - 1) + String.valueOf(col);
+//				} else if (col <= 11) {
+//					seatLabel = (char) ('A' + row - 1) + String.valueOf(col - 1);
+//				} else if (col <= 16) {
+//					seatLabel = (char) ('A' + row - 1) + String.valueOf(col - 2);
+//				}
+//				
+//
+//				JButton seatButton = new JButton(seatLabel);
+//				seatButton.setFocusable(false);
+//				if (col == 5 || col == 12) {
+//					seatButton.setVisible(false);
+//				}
+//				seatsPanel.add(seatButton);
+//				
+//			}
+//		}
 		
 		screenPanel = new JPanel();
 		screenPanel.setBackground(new Color(0, 255, 128));
@@ -176,21 +175,119 @@ public class ShowtimeSeatDialog extends JDialog {
 		saveChoiceButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		saveChoiceButton.setBackground(new Color(255, 81, 90));
 		saveChoiceButton.setBounds(1045, 640, 230, 35);
+                
+                saveChoiceButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dispose();
+                    }
+                 });
 		
-		add(saveMovieButton);
-		add(theaterPanel);
-		add(showtimesLabel);
-		add(showtime1RadButton);
-		add(showtime2RadButton);
-		add(showtime3RadButton);
-		add(seatsAvailableLabel);
-		add(seatsAvailableMainPanel);
-		add(colorTaken);
-		add(takenLabel);
-		add(availableLabel);
-		add(colorAvailable);
-		add(selectedLabel);
-		add(colorSelected);
-		add(saveChoiceButton);
+		getContentPane().add(saveMovieButton);
+		getContentPane().add(theaterPanel);
+		getContentPane().add(showtimesLabel);
+		getContentPane().add(seatsAvailableLabel);
+		getContentPane().add(seatsAvailableMainPanel);
+		getContentPane().add(colorTaken);
+		getContentPane().add(takenLabel);
+		getContentPane().add(availableLabel);
+		getContentPane().add(colorAvailable);
+		getContentPane().add(selectedLabel);
+		getContentPane().add(colorSelected);
+		getContentPane().add(saveChoiceButton);
+		
+		showtimesMainPanel = new JPanel();
+		showtimesMainPanel.setBounds(20, 71, 237, 98);
+		getContentPane().add(showtimesMainPanel);
+		
+		addRadButtonsToButtonPanel(showtimes);
 	}
+	
+	private void addRadButtonsToButtonPanel(ArrayList<Showtime> showtimes) {
+
+            for(Showtime showtime: showtimes) {
+                String showDateStr = Helper.convertLocalDateToString(showtime.getShowDateTime().toLocalDate());
+                String showtime1Str = Helper.getFormattedTime(showtime.getShowDateTime().toLocalTime());
+                
+                JRadioButton showtimeRadButton = new JRadioButton(showDateStr + " " + showtime1Str);
+                showtimesBtnGroup.add(showtimeRadButton);
+                
+                showtimeRadButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        selectedShowtimeId = showtime.getShowtimeId();
+                        addSeatsToSeatsPanel(showtime.getSeats());
+                    }
+            });
+                showtimesMainPanel.add(showtimeRadButton);
+            }
+	}
+        
+        private void addSeatsToSeatsPanel(ArrayList<Seat> seats) {
+            seatsPanel.removeAll();
+            for (int row = 0; row <= 7; row++) {
+		for (int col = 1; col <= 16; col++) {
+                    
+                    JToggleButton seatButton = new JToggleButton();
+                    seatButton.setFocusable(false);
+                    
+                    Seat seat = null;
+                    if (col == 5 || col == 12) {
+                        seatButton.setVisible(false);
+                        seatsPanel.add(seatButton);
+                        continue;
+                    } else if (col <= 4) {
+                        seat = seats.get(14 * row + (col - 1));
+                    } else if (col <= 11) {
+                        seat = seats.get(14 * row + (col - 2));
+                    } else if (col <= 16) {
+                        seat = seats.get(14 * row + (col - 3));
+                    }
+                    
+                    final Seat currentSeat = seat;
+                    
+                    String seatLabel = seat.getSeatNumber();
+                    seatButton.setText(seatLabel);
+
+                    seatButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if(seatButton.isSelected()) {  
+                                selectedSeats.add(currentSeat);
+                            } else {
+                                for(int i = 0; i < selectedSeats.size(); i++) {
+                                    if(selectedSeats.get(i).getSeatNumber().equals(seatLabel)) {
+                                        selectedSeats.remove(i);
+                                    }
+                                }   
+                            }
+                            
+                            for(Seat selectedSeat: selectedSeats) {
+                                System.out.println(selectedSeat.getSeatNumber());
+                            }
+                        }
+                    });
+                    
+                    
+                    if(seat.getStatus().equals("Reserved")) {
+                        seatButton.setEnabled(false);
+                    }
+                    
+                    seatsPanel.add(seatButton);		
+		}
+            }
+            
+            revalidate();
+            repaint();
+        }
+        
+        public String getSelectedShowtimeId() {
+            return this.selectedShowtimeId;
+        }
+        
+        public ArrayList<Seat> getSelectedSeats() {
+            return this.selectedSeats;
+        }
 }
+
+

@@ -1,9 +1,18 @@
 package staffgui;
 
+import Database.AdminDatabaseManager;
+import Database.StaffDatabaseManager;
+import Model.Authentication;
+import Model.Seat;
+import Model.Theater;
+import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
 
@@ -18,6 +27,13 @@ public class Booking extends JPanel {
     private JPanel moviesPanel;
     private JButton chooseShowtimeSeatButton;
     private JButton proceedToPaymentButton;
+    
+    //Fields
+    private ButtonGroup buttonGroup = new ButtonGroup();
+    private ArrayList<Theater> theatersData = StaffDatabaseManager.retrieveTheaterData();
+    private String selectedTheaterId;
+    private String selectedShowtimeId;
+    private ArrayList<Seat> selectedSeats;
 
     public Booking(JFrame parent) {
     	this.parent = parent;
@@ -37,11 +53,29 @@ public class Booking extends JPanel {
     	chooseShowtimeSeatButton.addActionListener(new ActionListener() {
     		@Override
             public void actionPerformed(ActionEvent e) {
+                
+                String selectedTheaterId = Helper.returnActionCommandOfWhatisSelectedButton(buttonGroup);
+                
+                for(Theater theaterData: theatersData) {
+                    if(String.valueOf(theaterData.getTheaterId()).equals(selectedTheaterId)) {
+                        ShowtimeSeatDialog.showtimes = theaterData.getShowingMovie().getShowtimes();
+                    }
+                }
+                
                 // Create a custom dialog
             	ShowtimeSeatDialog showtimeSeatDialog = new ShowtimeSeatDialog();
-
             	showtimeSeatDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
             	showtimeSeatDialog.setVisible(true);
+                
+                showtimeSeatDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                System.out.println("hey");
+                    selectedShowtimeId= showtimeSeatDialog.getSelectedShowtimeId();
+                    selectedSeats = showtimeSeatDialog.getSelectedSeats();
+                            }
+                        });
+                    
             }
     	});
     	chooseShowtimeSeatButton.setForeground(Color.WHITE);
@@ -54,8 +88,17 @@ public class Booking extends JPanel {
     	proceedToPaymentButton.addActionListener(new ActionListener() {
     		@Override
             public void actionPerformed(ActionEvent e) {
-                // Create a custom dialog
+                // Create a custom dialog 
+                for(Theater theaterData: theatersData) {
+                    if(String.valueOf(theaterData.getTheaterId()).equals(selectedTheaterId)) {
+                        PaymentDialog.theaterData = theaterData;
+                    }
+                }
+                PaymentDialog.staffId = Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID;
+                PaymentDialog.selectedShowtimeId = selectedShowtimeId;
+                PaymentDialog.selectedSeats = selectedSeats;
             	PaymentDialog paymentDialog = new PaymentDialog();
+                
 
             	paymentDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
             	paymentDialog.setVisible(true);
@@ -66,47 +109,65 @@ public class Booking extends JPanel {
     	proceedToPaymentButton.setBackground(new Color(255, 81, 90));
     	proceedToPaymentButton.setBounds(740, 624, 230, 35);
     	mainPanel.add(proceedToPaymentButton);
-    	
-    	for (int i = 0; i < 3; i++) {
-    		JPanel newPanel = createMoviePanel();
+        
+        
+        for(Theater theaterData: theatersData) {
+            if(theaterData.getShowingMovie() != null) {
+                 JPanel newPanel = createMoviePanel(theaterData);
     		
-    		moviesPanel.add(newPanel);
-    	}
+                moviesPanel.add(newPanel);
+            }
+        }
     	
     	add(mainPanel);
     }
     
-    private JPanel createMoviePanel() {
+    private JPanel createMoviePanel(Theater theaterData) {
     	JPanel moviePanel = new JPanel();
     	moviePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
     	moviePanel.setPreferredSize(new Dimension(260, 425));
     	moviePanel.setLayout(null);
     	
-    	JPanel moviePosterPanel = new JPanel();
-    	moviePosterPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-    	moviePosterPanel.setBounds(55, 10, 150, 240);
+    	JLabel moviePosterLabel = new JLabel();
+    	moviePosterLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
+    	moviePosterLabel.setBounds(55, 10, 150, 240);
+        moviePosterLabel.setPreferredSize(new Dimension(150, 240));
+        ImageIcon iconImage = new ImageIcon(theaterData.getShowingMovie().getMoviePosterPicturePath());
+        Image originalImage = iconImage.getImage();
+        Image scaledImage = originalImage.getScaledInstance(moviePosterLabel.getWidth(), moviePosterLabel.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+        moviePosterLabel.setIcon(scaledImageIcon);
     	
-    	JLabel movieName = new JLabel("Hello, Love, Again");
-    	movieName.setFont(new Font("Segoe UI", Font.BOLD, 15));
+    	JLabel movieName = new JLabel(theaterData.getShowingMovie().getMovieName());
+    	movieName.setFont(new Font("Segoe UI", Font.BOLD, 17));
     	movieName.setHorizontalAlignment(SwingConstants.CENTER);
     	movieName.setBounds(0, 260, 260, 25);
     	
-    	JLabel moviePrice = new JLabel("₱ 450");
+    	JLabel moviePrice = new JLabel("₱ " + theaterData.getShowingMovie().getMoviePrice());
     	moviePrice.setHorizontalAlignment(SwingConstants.CENTER);
-    	moviePrice.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 14));
+    	moviePrice.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 16));
     	moviePrice.setBounds(0, 290, 260, 25);
     	
-    	JLabel movieGenre = new JLabel("Horror, Comedy");
+        String genres = (theaterData.getShowingMovie().getMovieGenre2() == null) ? theaterData.getShowingMovie().getMovieGenre1() : theaterData.getShowingMovie().getMovieGenre1() + ", " + theaterData.getShowingMovie().getMovieGenre2();
+    	JLabel movieGenre = new JLabel(genres);
     	movieGenre.setHorizontalAlignment(SwingConstants.CENTER);
-    	movieGenre.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    	movieGenre.setFont(new Font("Segoe UI", Font.BOLD, 14));
     	movieGenre.setBounds(0, 330, 260, 25);
     	
-    	JLabel movieDuration = new JLabel("3hrs 4mins");
+    	JLabel movieDuration = new JLabel(String.valueOf(theaterData.getShowingMovie().getDuration()) + " minutes");
     	movieDuration.setHorizontalAlignment(SwingConstants.CENTER);
     	movieDuration.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	movieDuration.setBounds(0, 360, 260, 25);
     	
     	JRadioButton movieRadButton = new JRadioButton("");
+        buttonGroup.add(movieRadButton);
+        movieRadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectedTheaterId = String.valueOf(theaterData.getTheaterId());
+            }
+         });
+        movieRadButton.setActionCommand(String.valueOf(theaterData.getTheaterId()));
     	movieRadButton.setBorder(new EmptyBorder(0, 0, 0, 0));
     	movieRadButton.setForeground(new Color(15, 23, 42));
     	movieRadButton.setBounds(120, 390, 20, 25);	
@@ -117,13 +178,13 @@ public class Booking extends JPanel {
     	theaterPanel.setBounds(0, 0, 45, 44);
     	theaterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
     	
-    	JLabel theaterLabel = new JLabel("1");
+    	JLabel theaterLabel = new JLabel(String.valueOf(theaterData.getTheaterId()));
     	theaterLabel.setForeground(new Color(255, 255, 255));
     	theaterLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 25));
     	theaterLabel.setHorizontalAlignment(SwingConstants.CENTER);
     	theaterPanel.add(theaterLabel);
     	
-    	moviePanel.add(moviePosterPanel);
+    	moviePanel.add(moviePosterLabel);
     	moviePanel.add(movieName);
     	moviePanel.add(moviePrice);
     	moviePanel.add(movieGenre);

@@ -1,10 +1,13 @@
 package admingui;
 
+import Database.AdminDatabaseManager;
+import Model.StaffEmployee;
 import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
@@ -22,6 +25,7 @@ public class ManageStaff extends JPanel {
     private JTextField searchField;
     private JButton restoreStaffButton;
     
+    private ArrayList<StaffEmployee> staffEmployees = AdminDatabaseManager.retrieveStaffEmployees();
 
     public ManageStaff() {
     	
@@ -32,11 +36,7 @@ public class ManageStaff extends JPanel {
 
     	staffMainPanel.setPreferredSize(new Dimension(935, 1000)); 
 
-    	// Add panels dynamically
-    	for (int i = 0; i < 10; i++) {
-    	    JPanel newPanel = createStaffPanel();  // Create custom panels
-    	    staffMainPanel.add(newPanel);
-    	}
+        addStaffToPanel(staffEmployees);
 
     	// ScrollPane configuration
     	scrollPane = new JScrollPane(staffMainPanel);
@@ -105,26 +105,33 @@ public class ManageStaff extends JPanel {
     		
     }
     
-    private JPanel createStaffPanel() {
+    private JPanel createStaffPanel(StaffEmployee staffData) {
     	JPanel staffPanel = new JPanel();
        	staffPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 //        staffPanel.setBounds(44, 11, 200, 280);
         staffPanel.setPreferredSize(new Dimension(220,280));
         staffPanel.setLayout(null);
         
-        JPanel staffProfilePicturePanel = new JPanel();
-        staffProfilePicturePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-        staffProfilePicturePanel.setBounds(60, 15, 100, 100);
+        JLabel staffProfilePictureLabel = new JLabel();
+        staffProfilePictureLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
+        staffProfilePictureLabel.setBounds(60, 15, 100, 100);
+        staffProfilePictureLabel.setPreferredSize(new Dimension(100, 100));
         
-        JLabel staffID = new JLabel("ID No. 112345");
-        staffID.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        staffID.setHorizontalAlignment(SwingConstants.CENTER);
-        staffID.setBounds(0, 125, 220, 14);
+        ImageIcon iconImage = new ImageIcon(staffData.getPicturePath());
+        Image originalImage = iconImage.getImage();
+        Image scaledImage = originalImage.getScaledInstance(staffProfilePictureLabel.getWidth(), staffProfilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+        staffProfilePictureLabel.setIcon(scaledImageIcon);
         
-        JLabel staffName = new JLabel("Rhem Giou Salvador");
+//        JLabel staffID = new JLabel("ID No. 112345");
+//        staffID.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+//        staffID.setHorizontalAlignment(SwingConstants.CENTER);
+//        staffID.setBounds(0, 125, 220, 14);
+        
+        JLabel staffName = new JLabel(staffData.getFirstName() + " " + staffData.getMiddleName().charAt(0) + ". " + staffData.getLastName());
         staffName.setFont(new Font("Segoe UI", Font.BOLD , 14));
         staffName.setHorizontalAlignment(SwingConstants.CENTER);
-        staffName.setBounds(0, 150, 220, 14);
+        staffName.setBounds(0, 125, 220, 14);
         
         JButton editStaffButton = new JButton("Edit Staff");
         editStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -134,6 +141,8 @@ public class ManageStaff extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Create a custom dialog
+                EditStaffDialog.staffId = staffData.getEmployeeId();
+                System.out.println(EditStaffDialog.staffId);
             	EditStaffDialog editStaffDialog = new EditStaffDialog();
 
             	editStaffDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
@@ -143,19 +152,40 @@ public class ManageStaff extends JPanel {
         
         JButton archiveStaffButton = new JButton("Archive Staff");
         archiveStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        archiveStaffButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
-        });
+
         archiveStaffButton.setBounds(90, 240, 115, 25);
+        archiveStaffButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                int response = JOptionPane.showConfirmDialog(null, "Do you want to continue?", "Archive Movie", JOptionPane.YES_NO_OPTION);
+
+                if (response == JOptionPane.YES_OPTION) {
+                    AdminDatabaseManager.archiveStaff(staffData.getEmployeeId());
+                    staffMainPanel.removeAll();
+                    staffEmployees = AdminDatabaseManager.retrieveStaffEmployees();
+                    addStaffToPanel(staffEmployees);
+                    staffMainPanel.revalidate();
+                    staffMainPanel.repaint();
+                } 
+            }
+        });
         
-        staffPanel.add(staffProfilePicturePanel);
-        staffPanel.add(staffID);
+        staffPanel.add(staffProfilePictureLabel);
+//        staffPanel.add(staffID);
         staffPanel.add(staffName);
         staffPanel.add(editStaffButton);
         staffPanel.add(archiveStaffButton);
         
         return staffPanel;
+    }
+    
+    private void addStaffToPanel(ArrayList<StaffEmployee> staffEmployees) {
+            	// Add panels dynamically
+    	for (StaffEmployee staffEmployee: staffEmployees) {
+            JPanel newPanel = createStaffPanel(staffEmployee);  // Create custom panels
+            staffMainPanel.add(newPanel);
+    	}
     }
 
 

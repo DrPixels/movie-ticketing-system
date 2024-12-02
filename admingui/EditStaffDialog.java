@@ -1,5 +1,10 @@
 package admingui;
 
+import Database.AdminDatabaseManager;
+import Model.AdminEmployee;
+import Model.Authentication;
+import Model.StaffEmployee;
+import helper.Helper;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import java.awt.Font;
@@ -8,7 +13,18 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.time.LocalDate;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class EditStaffDialog extends JDialog {
 
@@ -30,13 +46,14 @@ public class EditStaffDialog extends JDialog {
 	
 	private JLabel birthdayLabel;
 	private JComboBox<String> birthdayMonthComboBox;
-	private JComboBox<String> birthdayDayComboBox;
-	private JComboBox<String> birthdayYearComboBox;
+	private JComboBox<Integer> birthdayDayComboBox;
+	private JComboBox<Integer> birthdayYearComboBox;
 	
 	private JLabel ageLabel;
 	private JTextField ageTF;
 	
 	private JLabel genderLabel;
+        private ButtonGroup genderGroup;
 	private JRadioButton maleRadButton;
 	private JRadioButton femaleRadButton;
 
@@ -52,6 +69,11 @@ public class EditStaffDialog extends JDialog {
 	private JTextField passwordTF;
 	
 	private JButton saveStaffButton;
+        
+        //Fields
+        public static String staffId;
+        private StaffEmployee staffData = AdminDatabaseManager.retrieveStaffDataById(staffId);
+        private String profilePicturePath = staffData.getPicturePath();
 
 	public static void main(String[] args) {
 		try {
@@ -72,12 +94,49 @@ public class EditStaffDialog extends JDialog {
 		profilePictureLabel = new JLabel();
 		profilePictureLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		profilePictureLabel.setBounds(30, 30, 150, 150);
+                profilePictureLabel.setPreferredSize(new Dimension(150, 150));
+                
+                ImageIcon iconImage = new ImageIcon(staffData.getPicturePath());
+                Image originalImage = iconImage.getImage();
+                Image scaledImage = originalImage.getScaledInstance(profilePictureLabel.getWidth(), profilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
+                ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                profilePictureLabel.setIcon(scaledImageIcon);
 		
 		uploadProfPicButton = new JButton("Upload Picture");
 		uploadProfPicButton.setForeground(Color.WHITE);
 		uploadProfPicButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		uploadProfPicButton.setBackground(new Color(55, 65, 81));
 		uploadProfPicButton.setBounds(30, 196, 150, 25);
+                
+                            uploadProfPicButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //For scaling the file
+		int profPicLabelWidth = profilePictureLabel.getWidth();
+		int profPicLabelHeight = profilePictureLabel.getHeight();
+
+		//Open as model dialog
+		JFileChooser fileChooser = new JFileChooser();
+
+		//Filtering the file based on their file extensions
+		fileChooser.setFileFilter(new FileNameExtensionFilter("jpg/png/gif", "jpg", "png", "gif"));
+
+		int result = fileChooser.showOpenDialog(Helper.getCurrentFrame());
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fileChooser.getSelectedFile();
+                        profilePicturePath = selectedFile.getAbsolutePath();
+                        
+			ImageIcon imageIcon = new ImageIcon(profilePicturePath);
+
+			//Scaling the image
+			Image originalImage = imageIcon.getImage();
+			Image scaledImage = originalImage.getScaledInstance(profPicLabelWidth, profPicLabelHeight, Image.SCALE_SMOOTH);
+			ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+			profilePictureLabel.setIcon(scaledImageIcon);
+			profilePictureLabel.putClientProperty("imagePath", selectedFile.getAbsolutePath());
+		}
+                }
+            });
 		
 		personalInfoLabel = new JLabel("Personal Information");
 		personalInfoLabel.setForeground(Color.WHITE);
@@ -92,6 +151,7 @@ public class EditStaffDialog extends JDialog {
 		firstNameTF = new JTextField();
 		firstNameTF.setColumns(10);
 		firstNameTF.setBounds(235, 100, 150, 25);
+                firstNameTF.setText(staffData.getFirstName());
 		
 		middleNameLabel = new JLabel("Middle Name:");
 		middleNameLabel.setForeground(Color.WHITE);
@@ -101,6 +161,7 @@ public class EditStaffDialog extends JDialog {
 		middleNameTF = new JTextField();
 		middleNameTF.setColumns(10);
 		middleNameTF.setBounds(425, 100, 150, 25);
+                middleNameTF.setText(staffData.getMiddleName());
 		
 		lastNameLabel = new JLabel("Last Name:");
 		lastNameLabel.setForeground(Color.WHITE);
@@ -110,20 +171,31 @@ public class EditStaffDialog extends JDialog {
 		lastNameTF = new JTextField();
 		lastNameTF.setColumns(10);
 		lastNameTF.setBounds(615, 100, 150, 25);
+                lastNameTF.setText(staffData.getLastName());
 		
 		birthdayLabel = new JLabel("Birthday:");
 		birthdayLabel.setForeground(Color.WHITE);
 		birthdayLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		birthdayLabel.setBounds(235, 155, 80, 20);	
 		
-		birthdayMonthComboBox = new JComboBox();
+		birthdayMonthComboBox = new JComboBox(new String[]{
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                });
 		birthdayMonthComboBox.setBounds(235, 180, 100, 25);
 		
-		birthdayDayComboBox = new JComboBox();
+		birthdayDayComboBox = new JComboBox<>();
 		birthdayDayComboBox.setBounds(345, 180, 50, 25);
 		
-		birthdayYearComboBox = new JComboBox();
+		birthdayYearComboBox = new JComboBox<>();
 		birthdayYearComboBox.setBounds(407, 180, 60, 25);
+                
+                Helper.setupDateComboBoxes(birthdayMonthComboBox, birthdayDayComboBox, birthdayYearComboBox);
+                
+                //Setting up the dates
+                birthdayMonthComboBox.setSelectedIndex(staffData.getBirthday().getMonthValue() - 1);
+                birthdayYearComboBox.setSelectedItem(staffData.getBirthday().getYear());
+                birthdayDayComboBox.setSelectedItem(staffData.getBirthday().getDayOfMonth());
 		
 		ageLabel = new JLabel("Age:");
 		ageLabel.setForeground(Color.WHITE);
@@ -131,7 +203,7 @@ public class EditStaffDialog extends JDialog {
 		ageLabel.setBounds(515, 155, 80, 20);
 		
 		ageTF = new JTextField();
-		ageTF.setEditable(false);
+                ageTF.setText(String.valueOf(staffData.getAge()));
 		ageTF.setColumns(10);
 		ageTF.setBounds(515, 185, 86, 20);	
 		
@@ -140,6 +212,7 @@ public class EditStaffDialog extends JDialog {
 		genderLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		genderLabel.setBounds(235, 230, 80, 20);
 
+                genderGroup = new ButtonGroup();
 		maleRadButton = new JRadioButton("Male");
 		maleRadButton.setForeground(Color.WHITE);
 		maleRadButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -149,6 +222,15 @@ public class EditStaffDialog extends JDialog {
 		femaleRadButton.setForeground(Color.WHITE);
 		femaleRadButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		femaleRadButton.setBounds(320, 260, 75, 25);
+                
+                genderGroup.add(maleRadButton);
+                genderGroup.add(femaleRadButton);
+                
+                if(staffData.getGender().equals("MALE")) {
+                    maleRadButton.setSelected(true);
+                } else {
+                    femaleRadButton.setSelected(true);
+                }
 		
 		emailLabel = new JLabel("Email:");
 		emailLabel.setForeground(Color.WHITE);
@@ -158,6 +240,7 @@ public class EditStaffDialog extends JDialog {
 		emailTF = new JTextField();
 		emailTF.setColumns(10);
 		emailTF.setBounds(230, 335, 250, 25);
+                emailTF.setText(staffData.getEmail());
 		
 		phoneNumberLabel = new JLabel("Phone Number:");
 		phoneNumberLabel.setForeground(Color.WHITE);
@@ -167,6 +250,7 @@ public class EditStaffDialog extends JDialog {
 		phoneNumberTF = new JTextField();
 		phoneNumberTF.setColumns(10);
 		phoneNumberTF.setBounds(530, 335, 250, 25);
+                phoneNumberTF.setText(staffData.getPhoneNumber());
 		
 		usernameLabel = new JLabel("Username:");
 		usernameLabel.setForeground(Color.WHITE);
@@ -177,6 +261,7 @@ public class EditStaffDialog extends JDialog {
 		usernameTF = new JTextField();
 		usernameTF.setColumns(10);
 		usernameTF.setBounds(230, 415, 250, 25);
+                usernameTF.setText(staffData.getUsername());
 		add(usernameTF);
 		
 		passwordLabel = new JLabel("Password:");
@@ -188,6 +273,7 @@ public class EditStaffDialog extends JDialog {
 		passwordTF = new JTextField();
 		passwordTF.setColumns(10);
 		passwordTF.setBounds(530, 415, 250, 25);
+                passwordTF.setText(staffData.getPassword());
 		add(passwordTF);
 		
 		saveStaffButton = new JButton("Save Staff");
@@ -195,6 +281,56 @@ public class EditStaffDialog extends JDialog {
 		saveStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		saveStaffButton.setBackground(new Color(255, 81, 90));
 		saveStaffButton.setBounds(774, 515, 150, 35);
+                
+                                saveStaffButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        if(!isFieldsValid()) {
+                            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Missing fields. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        
+                        //For getting the birthday
+                        String year = birthdayYearComboBox.getSelectedItem().toString();
+                        String month = birthdayMonthComboBox.getSelectedItem().toString();
+                        String day = birthdayDayComboBox.getSelectedItem().toString();
+                        String birthdate = month + " " + day + ", " + year;
+                        LocalDate birthday = Helper.dateStringToLocalDate(birthdate);
+                        System.out.println(birthday);
+
+                        String picturePath = profilePicturePath;
+                        String firstName = firstNameTF.getText();
+                        String middleName = middleNameTF.getText();
+                        String lastName = lastNameTF.getText();
+                        int age = Integer.parseInt(ageTF.getText());
+                        String gender = Helper.returnWhatisSelectedButton(genderGroup);
+                        String email = emailTF.getText();
+                        String phoneNumber = phoneNumberTF.getText();
+                        String username = usernameTF.getText();
+                        String password = passwordTF.getText();
+
+                        StaffEmployee updateStaffData = new StaffEmployee(staffId, 
+                                picturePath, 
+                                firstName, 
+                                middleName, 
+                                lastName, 
+                                birthday, 
+                                age, 
+                                gender, 
+                                email, 
+                                phoneNumber, 
+                                username, 
+                                password);
+
+                        if(!AdminDatabaseManager.updateStaffDataById(updateStaffData)) {
+                            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid action. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Your information was update successfully.", "Successful Action", JOptionPane.WARNING_MESSAGE);
+                            staffData = AdminDatabaseManager.retrieveStaffDataById(staffId);
+                            
+                            dispose();
+                        }     
+                    }
+                });
 		
 		add(profilePictureLabel);
 		add(uploadProfPicButton);
@@ -227,4 +363,16 @@ public class EditStaffDialog extends JDialog {
 
 		
 	}
+        
+                private boolean isFieldsValid() {
+         return !(firstNameTF.getText().isEmpty() || 
+                 middleNameTF.getText().isEmpty() || 
+                 lastNameTF.getText().isEmpty() || 
+                 ageTF.getText().isEmpty() ||
+                 emailTF.getText().isEmpty() || 
+                 phoneNumberTF.getText().isEmpty() ||
+                 usernameTF.getText().isEmpty() ||
+                 passwordTF.getText().isEmpty() || 
+                 (!maleRadButton.isSelected() && !femaleRadButton.isSelected()));
+     }
 }

@@ -28,10 +28,6 @@ public class LoginPage extends JFrame {
     private JButton registerAsAdminButton;
     private JPanel rightPanel;
     
-    private String tempUser = "user";
-    private String tempPass = "password";
-    private String role = "STAFF";
-       
 
     public LoginPage() {
         setSize(700, 400);

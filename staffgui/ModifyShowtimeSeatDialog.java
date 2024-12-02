@@ -2,6 +2,7 @@ package staffgui;
 
 import java.awt.FlowLayout;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -22,9 +23,6 @@ public class ModifyShowtimeSeatDialog extends JDialog {
 	private JPanel theaterPanel;
 	private JLabel theaterLabel;
 	private JLabel showtimesLabel;
-	private JRadioButton showtime1RadButton;
-	private JRadioButton showtime2RadButton;
-	private JRadioButton showtime3RadButton;
 	private JLabel seatsAvailableLabel;
 	private JPanel seatsAvailableMainPanel;
 	private JPanel seatsPanel;
@@ -39,12 +37,16 @@ public class ModifyShowtimeSeatDialog extends JDialog {
 	private JLabel selectedLabel;
 	private JPanel colorSelected;
 	
+	private JPanel showtimesMainPanel;
+	
 	private JButton saveChoiceButton;
+	
+	private ButtonGroup showtimesBtnGroup = new ButtonGroup();
 
 
 	public static void main(String[] args) {
 		try {
-			ModifyShowtimeSeatDialog dialog = new ModifyShowtimeSeatDialog();
+			ShowtimeSeatDialog dialog = new ShowtimeSeatDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -82,19 +84,7 @@ public class ModifyShowtimeSeatDialog extends JDialog {
 		showtimesLabel = new JLabel("Showtimes");
 		showtimesLabel.setForeground(Color.WHITE);
 		showtimesLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
-		showtimesLabel.setBounds(10, 40, 175, 20);
-		
-		showtime1RadButton = new JRadioButton("November 24, 2024 09:25 PM");
-		showtime1RadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		showtime1RadButton.setBounds(15, 80, 215, 30);
-		
-		showtime2RadButton = new JRadioButton("November 24, 2024 09:25 PM");
-		showtime2RadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		showtime2RadButton.setBounds(15, 120, 215, 30);;
-		
-		showtime3RadButton = new JRadioButton("November 24, 2024 09:25 PM");
-		showtime3RadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		showtime3RadButton.setBounds(15, 160, 215, 30);
+		showtimesLabel.setBounds(10, 40, 175, 20);;
 		
 		seatsAvailableLabel = new JLabel("Seats Available");
 		seatsAvailableLabel.setForeground(Color.WHITE);
@@ -177,20 +167,31 @@ public class ModifyShowtimeSeatDialog extends JDialog {
 		saveChoiceButton.setBackground(new Color(255, 81, 90));
 		saveChoiceButton.setBounds(1045, 640, 230, 35);
 		
-		add(saveMovieButton);
-		add(theaterPanel);
-		add(showtimesLabel);
-		add(showtime1RadButton);
-		add(showtime2RadButton);
-		add(showtime3RadButton);
-		add(seatsAvailableLabel);
-		add(seatsAvailableMainPanel);
-		add(colorTaken);
-		add(takenLabel);
-		add(availableLabel);
-		add(colorAvailable);
-		add(selectedLabel);
-		add(colorSelected);
-		add(saveChoiceButton);
+		getContentPane().add(saveMovieButton);
+		getContentPane().add(theaterPanel);
+		getContentPane().add(showtimesLabel);
+		getContentPane().add(seatsAvailableLabel);
+		getContentPane().add(seatsAvailableMainPanel);
+		getContentPane().add(colorTaken);
+		getContentPane().add(takenLabel);
+		getContentPane().add(availableLabel);
+		getContentPane().add(colorAvailable);
+		getContentPane().add(selectedLabel);
+		getContentPane().add(colorSelected);
+		getContentPane().add(saveChoiceButton);
+		
+		showtimesMainPanel = new JPanel();
+		showtimesMainPanel.setBounds(20, 71, 237, 98);
+		getContentPane().add(showtimesMainPanel);
+		
+		addRadButtonsToButtonPanel();
+	}
+	
+	private void addRadButtonsToButtonPanel() {
+		for (int i = 0; i < 3; i++) {
+			JRadioButton showtimeRadButton = new JRadioButton("November 24, 2024 09:25 PM");
+			showtimesBtnGroup.add(showtimeRadButton);
+			showtimesMainPanel.add(showtimeRadButton);
+		}
 	}
 }

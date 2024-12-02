@@ -1,4 +1,7 @@
 package staffgui;
+import Database.AdminDatabaseManager;
+import Model.StaffEmployee;
+import Model.Authentication;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -12,6 +15,8 @@ import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.UIManager;
 import java.awt.CardLayout;
+import java.awt.*;
+import javax.swing.ImageIcon;
 import javax.swing.border.LineBorder;
 
 import logingui.LoginPage;
@@ -25,7 +30,7 @@ public class StaffDashboard extends JFrame {
 	private CardLayout rightCardLayout;
 	private JPanel rightDashboardPanel;
 	
-	
+	private StaffEmployee staffData = AdminDatabaseManager.retrieveStaffDataById(Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID);
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -53,12 +58,19 @@ public class StaffDashboard extends JFrame {
 		leftDashboardPanel.setBounds(0, 0, 200, 691);
 		leftDashboardPanel.setLayout(null);
 		
-		JPanel profilePicturePanel = new JPanel();
-		profilePicturePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		profilePicturePanel.setBounds(45, 20, 110, 110);
-		leftDashboardPanel.add(profilePicturePanel);
+		JLabel profilePictureLabel = new JLabel();
+		profilePictureLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		profilePictureLabel.setBounds(45, 20, 110, 110);
+                profilePictureLabel.setPreferredSize(new Dimension(110, 110));
+                
+                ImageIcon iconImage = new ImageIcon(staffData.getPicturePath());
+                Image originalImage = iconImage.getImage();
+                Image scaledImage = originalImage.getScaledInstance(profilePictureLabel.getWidth(), profilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
+                ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                profilePictureLabel.setIcon(scaledImageIcon);
+		leftDashboardPanel.add(profilePictureLabel);
 		
-		JLabel helloLabel = new JLabel("Hello, Name!");
+		JLabel helloLabel = new JLabel("Hello, " + staffData.getFirstName() + "!");
 		helloLabel.setForeground(new Color(255, 255, 255));
 		helloLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 14));
 		helloLabel.setHorizontalAlignment(SwingConstants.CENTER);

@@ -1,5 +1,11 @@
 package staffgui;
 
+import Database.StaffDatabaseManager;
+import Model.Movie;
+import Model.Seat;
+import Model.Showtime;
+import Model.Theater;
+import helper.Helper;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -12,7 +18,16 @@ import javax.swing.JSpinner;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import java.awt.Color;
+import static java.awt.Component.TOP_ALIGNMENT;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import static java.awt.image.ImageObserver.PROPERTIES;
+import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 public class PaymentDialog extends JDialog {
 
@@ -20,9 +35,9 @@ public class PaymentDialog extends JDialog {
 	
 	private JPanel dynamicPanel;
 	private JTextField cashTenderTF;
-	private JTextField textField;
+	private JTextField refNumTF;
 	
-	private JPanel moviePosterLabel;
+	private JLabel moviePosterLabel;
 	private JLabel movieName;
 	private JLabel moviePrice;
 	private JLabel movieShowtime;
@@ -33,6 +48,11 @@ public class PaymentDialog extends JDialog {
 	private JLabel paymentMethodLabel;
 	private JComboBox<String> paymentMethodDropdown;
 	private JButton payButton;
+        
+        public static String staffId;
+        public static Theater theaterData;
+        public static String selectedShowtimeId;
+        public static ArrayList<Seat> selectedSeats;
 
 	
 
@@ -53,25 +73,47 @@ public class PaymentDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public PaymentDialog() {
+            Movie movieChosen = theaterData.getShowingMovie();
 		setBounds(100, 100, 500, 600);
 		setLayout(null);
+                setTitle("Payment Window");
 		
-		moviePosterLabel = new JPanel();
+		moviePosterLabel = new JLabel();
 		moviePosterLabel.setBounds(20, 20, 150, 240);
+                moviePosterLabel.setPreferredSize(new Dimension(150, 240));
+                
+                ImageIcon iconImage = new ImageIcon(theaterData.getShowingMovie().getMoviePosterPicturePath());
+                Image originalImage = iconImage.getImage();
+                Image scaledImage = originalImage.getScaledInstance(moviePosterLabel.getWidth(), moviePosterLabel.getHeight(), Image.SCALE_SMOOTH);
+                ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                moviePosterLabel.setIcon(scaledImageIcon);
 
-		movieName = new JLabel("Black to the Future");
+		movieName = new JLabel(movieChosen.getMovieName());
 		movieName.setFont(new Font("Segoe UI", Font.BOLD, 15));
 		movieName.setBounds(195, 20, 200, 20);
 
-		moviePrice = new JLabel("₱ 450");
+		moviePrice = new JLabel("₱ " + movieChosen.getMoviePrice());
 		moviePrice.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 14));
 		moviePrice.setBounds(195, 50, 200, 20);
 
-		movieShowtime = new JLabel("November 29, 2024 09:58 PM");
+                String showDateStr = "";
+                String showtime1Str = "";
+                for(Showtime showtime: movieChosen.getShowtimes()) {
+                    if(showtime.getShowtimeId().equals(selectedShowtimeId)) {
+                        showDateStr = Helper.convertLocalDateToString(showtime.getShowDateTime().toLocalDate());
+                        showtime1Str = Helper.getFormattedTime(showtime.getShowDateTime().toLocalTime());
+                    }
+                }
+                
+		movieShowtime = new JLabel(showDateStr + " " + showtime1Str);
 		movieShowtime.setFont(new Font("Segoe UI", Font.ITALIC, 14));
 		movieShowtime.setBounds(195, 90, 256, 20);
-
-		seats = new JLabel("A1, A2");
+                
+                String seatLabel = "";
+                for(Seat selectedSeat: selectedSeats){
+                    seatLabel += selectedSeat.getSeatNumber() + ", ";
+                }
+		seats = new JLabel(seatLabel);
 		seats.setFont(new Font("Segoe UI", Font.ITALIC, 14));
 		seats.setBounds(255, 130, 219, 20);
 
@@ -79,12 +121,10 @@ public class PaymentDialog extends JDialog {
 		seatsLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		seatsLabel.setBounds(195, 130, 56, 20);
 		
-		numberOfTixLabel = new JLabel("No. of Tickets");
+		numberOfTixLabel = new JLabel(selectedSeats.size() + " Tickets");
 		numberOfTixLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		numberOfTixLabel.setBounds(195, 170, 107, 20);
 		
-		ticketSpinner = new JSpinner();
-		ticketSpinner.setBounds(195, 201, 110, 30);
 		
 		paymentMethodLabel = new JLabel("Payment Method:");
 		paymentMethodLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -93,20 +133,30 @@ public class PaymentDialog extends JDialog {
 		String[] paymentOptions = {"Cash", "GCash"};
 		paymentMethodDropdown = new JComboBox<>(paymentOptions);
 		paymentMethodDropdown.setBounds(150, 310, 120, 25);
-		
+                paymentMethodLabel.setBounds(20, 310, 130, 20);
+                
+                JLabel totalLabel = new JLabel("Total:");
+                totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		totalLabel.setBounds(20, 340, 130, 20);
+               
+                float totalPrice = movieChosen.getMoviePrice() * selectedSeats.size();
+                JLabel total = new JLabel("₱ " + totalPrice);
+                total.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		total.setBounds(70, 340, 130, 20);
+                
 		dynamicPanel = new JPanel();
-		dynamicPanel.setBounds(20, 350, 440, 95);
+		dynamicPanel.setBounds(20, 380, 440, 95);
 		dynamicPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		updateDynamicPanel("Cash");
 		
 		
 		paymentMethodDropdown.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedPaymentMethod = (String) paymentMethodDropdown.getSelectedItem();
-                updateDynamicPanel(selectedPaymentMethod);
-                
-            }
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        String selectedPaymentMethod = (String) paymentMethodDropdown.getSelectedItem();
+                        updateDynamicPanel(selectedPaymentMethod);
+
+                }
             
 
         });
@@ -118,6 +168,34 @@ public class PaymentDialog extends JDialog {
 		payButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		payButton.setBackground(new Color(255, 81, 90));
 		payButton.setBounds(324, 515, 150, 35);
+                payButton.addActionListener(new ActionListener() {
+    		@Override
+                    public void actionPerformed(ActionEvent e) {
+                        
+                        int numberOfTickets = selectedSeats.size();
+                        
+                        String selectedPaymentMethod = (String) paymentMethodDropdown.getSelectedItem();
+                        
+                        float cashTender = 0;
+                        
+                        if(selectedPaymentMethod.equals("Cash")) {
+                            cashTender = Float.parseFloat(cashTenderTF.getText());
+                        } else {
+                            cashTender = Float.parseFloat(refNumTF.getText());
+                        }
+                         if(!StaffDatabaseManager.addTransactionToBookingTransaction(staffId, 
+                                theaterData, 
+                                selectedShowtimeId, 
+                                numberOfTickets, 
+                                totalPrice, 
+                                cashTender, 
+                                selectedPaymentMethod, 
+                                selectedSeats)) {
+                             JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid action. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                         }
+                        
+                    }
+                });
 		add(payButton);
 		
 		add(moviePosterLabel);
@@ -127,9 +205,10 @@ public class PaymentDialog extends JDialog {
 		add(seats);
 		add(seatsLabel);
 		add(numberOfTixLabel);
-		add(ticketSpinner);
 		add(paymentMethodLabel);
 		add(paymentMethodDropdown);
+                add(totalLabel);
+                add(total);
 		add(dynamicPanel);
 		add(payButton);
 
@@ -153,9 +232,9 @@ public class PaymentDialog extends JDialog {
 			lblReferenceNumber.setFont(new Font("Segoe UI", Font.BOLD, 14));
 			dynamicPanel.add(lblReferenceNumber);
 
-			textField = new JTextField();
-			dynamicPanel.add(textField);
-			textField.setColumns(10);
+			refNumTF = new JTextField();
+			dynamicPanel.add(refNumTF);
+			refNumTF.setColumns(10);
         }
         
         dynamicPanel.revalidate();

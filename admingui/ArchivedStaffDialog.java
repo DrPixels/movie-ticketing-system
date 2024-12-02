@@ -1,5 +1,8 @@
 package admingui;
 
+import Database.AdminDatabaseManager;
+import Model.Movie;
+import Model.StaffEmployee;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
@@ -15,8 +18,11 @@ import java.awt.Dimension;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.ImageIcon;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -33,6 +39,8 @@ public class ArchivedStaffDialog extends JDialog {
 	private JPanel staffMainPanel;
 	private JScrollPane scrollPane;
 	private JLabel searchLabel;
+        
+            private ArrayList<StaffEmployee> archivedStaffEmployees = AdminDatabaseManager.retrieveArchivedStaffEmployees();
 
 	
 	
@@ -73,8 +81,8 @@ public class ArchivedStaffDialog extends JDialog {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
-        for (int i = 0; i < 10; i++) {
-        	JPanel newPanel = createStaffPanel();
+        for (StaffEmployee staffEmployee: archivedStaffEmployees) {
+        	JPanel newPanel = createStaffPanel(staffEmployee);
         	
         	staffMainPanel.add(newPanel);
         }
@@ -93,26 +101,33 @@ public class ArchivedStaffDialog extends JDialog {
 		add(textField);
 	}
 	
-	private JPanel createStaffPanel() {
+	private JPanel createStaffPanel(StaffEmployee staffData) {
     	JPanel staffPanel = new JPanel();
        	staffPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 //        staffPanel.setBounds(44, 11, 200, 280);
         staffPanel.setPreferredSize(new Dimension(220,280));
         staffPanel.setLayout(null);
         
-        JPanel staffProfilePicturePanel = new JPanel();
-        staffProfilePicturePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-        staffProfilePicturePanel.setBounds(60, 15, 100, 100);
+        JLabel staffProfilePictureLabel = new JLabel();
+        staffProfilePictureLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
+        staffProfilePictureLabel.setBounds(60, 15, 100, 100);
         
-        JLabel staffID = new JLabel("ID No. 112345");
-        staffID.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        staffID.setHorizontalAlignment(SwingConstants.CENTER);
-        staffID.setBounds(0, 125, 220, 14);    
         
-        JLabel staffName = new JLabel("Rhem Giou Salvador");
+        ImageIcon iconImage = new ImageIcon(staffData.getPicturePath());
+        Image originalImage = iconImage.getImage();
+        Image scaledImage = originalImage.getScaledInstance(staffProfilePictureLabel.getWidth(), staffProfilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+        staffProfilePictureLabel.setIcon(scaledImageIcon);
+        
+//        JLabel staffID = new JLabel("ID No. 112345");
+//        staffID.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+//        staffID.setHorizontalAlignment(SwingConstants.CENTER);
+//        staffID.setBounds(0, 125, 220, 14);    
+        
+        JLabel staffName = new JLabel(staffData.getFirstName() + " " + staffData.getMiddleName().charAt(0) + ". " + staffData.getLastName());
         staffName.setFont(new Font("Segoe UI", Font.BOLD , 14));
         staffName.setHorizontalAlignment(SwingConstants.CENTER);
-        staffName.setBounds(0, 150, 220, 14); 
+        staffName.setBounds(0, 125, 220, 14); 
         
         JButton restoreStaffButton = new JButton("Restore");
         restoreStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -122,8 +137,8 @@ public class ArchivedStaffDialog extends JDialog {
         });
         restoreStaffButton.setBounds(90, 240, 115, 25);  
         
-        staffPanel.add(staffProfilePicturePanel);
-        staffPanel.add(staffID);
+        staffPanel.add(staffProfilePictureLabel);
+//        staffPanel.add(staffID);
         staffPanel.add(staffName);
         staffPanel.add(restoreStaffButton);
         

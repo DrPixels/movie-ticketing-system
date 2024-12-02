@@ -170,6 +170,16 @@ private static int getDaysInMonth(int month, int year) {
         return "0";
     }
     
+    public static String returnActionCommandOfWhatisSelectedButton(ButtonGroup buttonGroup) {
+        for (AbstractButton button : java.util.Collections.list(buttonGroup.getElements())) {
+                        if (button.isSelected()) {
+                               return button.getActionCommand();
+                        }
+        }
+        
+        return "0";
+    }
+    
     public static LocalDate dateStringToLocalDate(String dateString) {
         
         // Define a formatter matching the input date pattern

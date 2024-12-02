@@ -1,10 +1,16 @@
 package admingui;
 
+import Database.AdminDatabaseManager;
+import Database.StaffDatabaseManager;
+import Model.SalesData;
+import Model.Theater;
 import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
@@ -41,9 +47,13 @@ public class Reports extends JPanel {
 
     private JLabel theaterLabel;
     private JPanel dailyReportPanel;
+    
+    //Fields
+    private ArrayList<Theater> theatersData = AdminDatabaseManager.retrieveTheaterData();
+    LocalDate currentDate = LocalDate.now();
 
     public Reports() {
-    	
+                
     	setLayout(null);
     	
     	titlePanel = new JPanel();
@@ -67,7 +77,9 @@ public class Reports extends JPanel {
     	dailyReportPanel.setBounds(0, 0, 270, 35);
     	dailyReportMainPanel.add(dailyReportPanel);
     	
-    	dailyReportLabel = new JLabel("Daily Report (November 24, 2024)");
+
+        String dateStr = Helper.convertLocalDateToString(currentDate);
+    	dailyReportLabel = new JLabel("Daily Report (" + dateStr+")");
     	dailyReportLabel.setForeground(new Color(255, 255, 255));
     	dailyReportLabel.setHorizontalAlignment(SwingConstants.CENTER);
     	dailyReportLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -92,7 +104,10 @@ public class Reports extends JPanel {
     	ticketsSoldPanel.setBounds(0, 40, 200, 40);
     	totalTicketsSoldMainPanel.add(ticketsSoldPanel);
     	
-    	dailyTotalTicketsSold = new JLabel("456 tickets sold");
+        //For Sales Data
+        
+        SalesData salesData = StaffDatabaseManager.getTotalTicketsAndRevenueSold(currentDate, currentDate);
+    	dailyTotalTicketsSold = new JLabel(salesData.getTotalTickets() + " tickets sold");
     	ticketsSoldPanel.add(dailyTotalTicketsSold);
     	dailyTotalTicketsSold.setFont(new Font("Segoe UI", Font.ITALIC, 16));
     	
@@ -120,7 +135,7 @@ public class Reports extends JPanel {
     	revGenPanel.setBounds(0, 40, 200, 40);
     	totalRevGenMainPanel.add(revGenPanel);
     	
-    	dailyTotalRevGen = new JLabel("₱ 456,000.76");
+    	dailyTotalRevGen = new JLabel("₱ " + salesData.getTotalAmount());
     	dailyTotalRevGen.setFont(new Font("Segoe UI", Font.ITALIC, 16));
     	revGenPanel.add(dailyTotalRevGen);
 
@@ -131,7 +146,7 @@ public class Reports extends JPanel {
     	
     	salesBreakDownPanel = new JPanel();
     	FlowLayout flowLayout = (FlowLayout) salesBreakDownPanel.getLayout();
-    	flowLayout.setAlignment(FlowLayout.LEFT);
+    	flowLayout.setAlignment(FlowLayout.CENTER);
     	salesBreakDownPanel.setBounds(10, 11, 618, 238);
     	salesBreakDownMainPanel.add(salesBreakDownPanel);
     	
@@ -156,15 +171,16 @@ public class Reports extends JPanel {
     	add(dailyReportMainPanel);
     	add(generateCustomReport);
     	
-    	for (int i = 0; i < 3; i++) {
-    		JPanel newPanel = createTheaterMoviePanel();
-    		
+    	for (Theater theaterData: theatersData) {
+                JPanel newPanel = createTheaterMoviePanel(theaterData);
     		salesBreakDownPanel.add(newPanel);
+
+    		
     	}
     		
     }
     
-    private JPanel createTheaterMoviePanel() {
+    private JPanel createTheaterMoviePanel(Theater theaterData) {
     	
     	JPanel theaterMoviePanel = new JPanel();
     	theaterMoviePanel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -172,36 +188,43 @@ public class Reports extends JPanel {
     	theaterMoviePanel.setPreferredSize(new Dimension(180,225));
     	theaterMoviePanel.setLayout(null);
     	
-    	theaterLabel = new JLabel("Theatre 1");
+    	theaterLabel = new JLabel(theaterData.getTheaterName());
     	theaterLabel.setBounds(10, 11, 140, 25);
     	theaterLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
     	
-    	JLabel theatreTicketsSold = new JLabel("459 tickets sold");
+        SalesData theaterSalesData = StaffDatabaseManager.getTheaterTotalTicketsAndRevenueSold(theaterData.getTheaterId(), currentDate, currentDate);
+    	JLabel theatreTicketsSold = new JLabel(theaterSalesData.getTotalTickets() + " tickets sold");
     	theatreTicketsSold.setBounds(20, 46, 110, 25);
     	theatreTicketsSold.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	
-    	JLabel theaterRevenue = new JLabel("₱ 456,000.76");
+    	JLabel theaterRevenue = new JLabel("₱ " + theaterSalesData.getTotalTickets());
     	theaterRevenue.setBounds(20, 76, 110, 25);
     	theaterRevenue.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	
-    	JLabel movieNameLabel = new JLabel("Black to the Future");
-    	movieNameLabel.setBounds(10, 121, 140, 25);
-    	movieNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        if(theaterData.getShowingMovie() != null) {
+            JLabel movieNameLabel = new JLabel(theaterData.getShowingMovie().getMovieName());
+            movieNameLabel.setBounds(10, 121, 140, 25);
+            movieNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+
+            SalesData movieSalesData = StaffDatabaseManager.getMovieTotalTicketsAndRevenueSold(theaterData.getShowingMovie().getMovieId(), currentDate, currentDate);
+            JLabel movieTicketsSold = new JLabel(movieSalesData.getTotalTickets() + " tickets sold");
+            movieTicketsSold.setBounds(20, 156, 110, 25);
+            movieTicketsSold.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+
+            JLabel movieRevenue = new JLabel("₱ " + movieSalesData.getTotalAmount());
+            movieRevenue.setBounds(20, 186, 110, 25);
+            movieRevenue.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+            
+            theaterMoviePanel.add(movieNameLabel);
+            theaterMoviePanel.add(movieTicketsSold);
+            theaterMoviePanel.add(movieRevenue);
+        }
     	
-    	JLabel movieTicketsSold = new JLabel("459 tickets sold");
-    	movieTicketsSold.setBounds(20, 156, 110, 25);
-    	movieTicketsSold.setFont(new Font("Segoe UI", Font.ITALIC, 14));
-    	
-    	JLabel movieRevenue = new JLabel("₱ 456,000.76");
-    	movieRevenue.setBounds(20, 186, 110, 25);
-    	movieRevenue.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	
     	theaterMoviePanel.add(theaterLabel);
     	theaterMoviePanel.add(theatreTicketsSold);
     	theaterMoviePanel.add(theaterRevenue);
-    	theaterMoviePanel.add(movieNameLabel);
-    	theaterMoviePanel.add(movieTicketsSold);
-    	theaterMoviePanel.add(movieRevenue);
+
     	
     	return theaterMoviePanel;
     	

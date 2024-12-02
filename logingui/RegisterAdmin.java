@@ -191,8 +191,6 @@ public class RegisterAdmin extends JFrame {
             birthdayYearComboBox.setBounds(405, 180, 60, 25);
             
             Helper.setupDateComboBoxes(birthdayMonthComboBox, birthdayDayComboBox, birthdayYearComboBox); 
-            
-
 
             ageLabel = new JLabel("Age:");
             ageLabel.setForeground(Color.WHITE);

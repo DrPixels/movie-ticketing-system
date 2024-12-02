@@ -171,7 +171,7 @@ public class ArchivedMoviesDialog extends JDialog {
             showtime2.setBounds(20, 225, 320, 14);  
 
             String showtime3Str = "";
-                if(archivedMovie.getShowtimes().size() - 1 >= 1 ) {
+                if(archivedMovie.getShowtimes().size() - 1 >= 2 ) {
                    showtime3Str = showDateStr + " " + Helper.getFormattedTime(archivedMovie.getShowtimes().get(2).getShowDateTime().toLocalTime());
                 }
             JLabel showtime3 = new JLabel(showtime3Str);
