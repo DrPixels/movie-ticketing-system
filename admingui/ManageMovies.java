@@ -89,9 +89,26 @@ public class ManageMovies extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 // Create a custom dialog
             	ArchivedMoviesDialog archivedMoviesDialog = new ArchivedMoviesDialog();
+                archivedMoviesDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
             	archivedMoviesDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	archivedMoviesDialog.setVisible(true);
+                
+                archivedMoviesDialog.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        mainPanel.removeAll();
+                        ArrayList<Theater> newTheatersData  = AdminDatabaseManager.retrieveTheaterData();
+                        for(Theater newTheaterData: newTheatersData) {
+                            System.out.println(newTheaterData.getShowingMovie().getMovieName());
+                        }
+                        addTheatersDataToPanel(newTheatersData);
+
+                        revalidate();
+                        repaint();
+
+                    }
+                });
             }
         });
     	
@@ -133,7 +150,7 @@ public class ManageMovies extends JPanel {
 		movieName.setFont(new Font("Segoe UI", Font.BOLD, 20));
 		movieName.setBounds(170, 46, 250, 30);
 		
-		moviePrice = new JLabel("₱ " + theaterMovie.getMoviePrice());
+		moviePrice = new JLabel("₱ " + Helper.formatPrice(theaterMovie.getMoviePrice()));
 		moviePrice.setForeground(new Color(255, 255, 255));
 		moviePrice.setFont(new Font("Segoe UI", Font.BOLD, 17));
 		moviePrice.setBounds(170, 80, 250, 20);
@@ -174,7 +191,7 @@ public class ManageMovies extends JPanel {
 		showDateTimePanel.setLayout(null);
 		
 		showDatePanel = new JPanel();
-		showDatePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+//		showDatePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		showDatePanel.setBounds(10, 5, 522, 30);
 		showDateTimePanel.add(showDatePanel);
 		showDatePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -201,6 +218,19 @@ public class ManageMovies extends JPanel {
                         UpdateMovieDialog updateMovieDialog = new UpdateMovieDialog();
                         updateMovieDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
                         updateMovieDialog.setVisible(true);
+                        
+                        updateMovieDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                             mainPanel.removeAll();
+                             ArrayList<Theater> newTheatersData  = AdminDatabaseManager.retrieveTheaterData();
+                             addTheatersDataToPanel(newTheatersData);
+                             
+                             revalidate();
+                             repaint();
+                            
+                            }
+                        });
                     }
                 });
 		
@@ -220,6 +250,9 @@ public class ManageMovies extends JPanel {
                             mainPanel.removeAll();
                             theatersData = AdminDatabaseManager.retrieveTheaterData();
                             addTheatersDataToPanel(theatersData);
+                            revalidate();
+                             repaint();
+                            
                         } 
                     }
                 });
@@ -283,26 +316,26 @@ public class ManageMovies extends JPanel {
 
 		add(MoviePanel);
 		
-		showtime1RemSeats = new JLabel("25/114");
-		showtime1RemSeats.setForeground(new Color(0, 255, 128));
-		showtime1RemSeats.setHorizontalAlignment(SwingConstants.CENTER);
-		showtime1RemSeats.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
-		showtime1RemSeats.setBounds(405, 168, 170, 21);
-		MoviePanel.add(showtime1RemSeats);
-		
-		showtime2RemSeats = new JLabel("25/114");
-		showtime2RemSeats.setHorizontalAlignment(SwingConstants.CENTER);
-		showtime2RemSeats.setForeground(new Color(0, 255, 128));
-		showtime2RemSeats.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
-		showtime2RemSeats.setBounds(585, 168, 170, 21);
-		MoviePanel.add(showtime2RemSeats);
-		
-		showtime3RemSeats = new JLabel("25/114");
-		showtime3RemSeats.setHorizontalAlignment(SwingConstants.CENTER);
-		showtime3RemSeats.setForeground(new Color(0, 255, 128));
-		showtime3RemSeats.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
-		showtime3RemSeats.setBounds(768, 168, 170, 21);
-		MoviePanel.add(showtime3RemSeats);
+//		showtime1RemSeats = new JLabel("25/114");
+//		showtime1RemSeats.setForeground(new Color(0, 255, 128));
+//		showtime1RemSeats.setHorizontalAlignment(SwingConstants.CENTER);
+//		showtime1RemSeats.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
+//		showtime1RemSeats.setBounds(405, 168, 170, 21);
+//		MoviePanel.add(showtime1RemSeats);
+//		
+//		showtime2RemSeats = new JLabel("25/114");
+//		showtime2RemSeats.setHorizontalAlignment(SwingConstants.CENTER);
+//		showtime2RemSeats.setForeground(new Color(0, 255, 128));
+//		showtime2RemSeats.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
+//		showtime2RemSeats.setBounds(585, 168, 170, 21);
+//		MoviePanel.add(showtime2RemSeats);
+//		
+//		showtime3RemSeats = new JLabel("25/114");
+//		showtime3RemSeats.setHorizontalAlignment(SwingConstants.CENTER);
+//		showtime3RemSeats.setForeground(new Color(0, 255, 128));
+//		showtime3RemSeats.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 15));
+//		showtime3RemSeats.setBounds(768, 168, 170, 21);
+//		MoviePanel.add(showtime3RemSeats);
 		
 		add(MoviePanel);
 		

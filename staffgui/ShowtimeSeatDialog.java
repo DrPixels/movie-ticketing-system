@@ -137,7 +137,7 @@ public class ShowtimeSeatDialog extends JDialog {
 		
 		screenPanel = new JPanel();
 		screenPanel.setBackground(new Color(0, 255, 128));
-		screenPanel.setBounds(306, 0, 400, 21);
+		screenPanel.setBounds(285, 0, 400, 21);
 		seatsAvailableMainPanel.add(screenPanel);
 		
 		screenLabel = new JLabel("SCREEN");
@@ -145,30 +145,30 @@ public class ShowtimeSeatDialog extends JDialog {
 		screenLabel.setForeground(new Color(0, 0, 0));
 		screenLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 13));
 		screenPanel.add(screenLabel);
+//		
+//		colorTaken = new JPanel();
+//		colorTaken.setBounds(435, 45, 15, 15);
+//		
+//		takenLabel = new JLabel("Taken");
+//		takenLabel.setForeground(Color.WHITE);
+//		takenLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+//		takenLabel.setBounds(455, 45, 53, 15);
+//		
+//		availableLabel = new JLabel("Available");
+//		availableLabel.setForeground(Color.WHITE);
+//		availableLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+//		availableLabel.setBounds(540, 45, 55, 15);
 		
-		colorTaken = new JPanel();
-		colorTaken.setBounds(435, 45, 15, 15);
-		
-		takenLabel = new JLabel("Taken");
-		takenLabel.setForeground(Color.WHITE);
-		takenLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		takenLabel.setBounds(455, 45, 53, 15);
-		
-		availableLabel = new JLabel("Available");
-		availableLabel.setForeground(Color.WHITE);
-		availableLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		availableLabel.setBounds(540, 45, 55, 15);
-		
-		colorAvailable = new JPanel();
-		colorAvailable.setBounds(515, 45, 15, 15);
-		
-		selectedLabel = new JLabel("Selected");
-		selectedLabel.setForeground(Color.WHITE);
-		selectedLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		selectedLabel.setBounds(630, 45, 55, 15);
-		
-		colorSelected = new JPanel();
-		colorSelected.setBounds(610, 45, 15, 15);
+//		colorAvailable = new JPanel();
+//		colorAvailable.setBounds(515, 45, 15, 15);
+//		
+//		selectedLabel = new JLabel("Selected");
+//		selectedLabel.setForeground(Color.WHITE);
+//		selectedLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+//		selectedLabel.setBounds(630, 45, 55, 15);
+//		
+//		colorSelected = new JPanel();
+//		colorSelected.setBounds(610, 45, 15, 15);
 		
 		saveChoiceButton = new JButton("Save Choice");
 		saveChoiceButton.setForeground(Color.WHITE);
@@ -188,12 +188,12 @@ public class ShowtimeSeatDialog extends JDialog {
 		getContentPane().add(showtimesLabel);
 		getContentPane().add(seatsAvailableLabel);
 		getContentPane().add(seatsAvailableMainPanel);
-		getContentPane().add(colorTaken);
-		getContentPane().add(takenLabel);
-		getContentPane().add(availableLabel);
-		getContentPane().add(colorAvailable);
-		getContentPane().add(selectedLabel);
-		getContentPane().add(colorSelected);
+//		getContentPane().add(colorTaken);
+//		getContentPane().add(takenLabel);
+//		getContentPane().add(availableLabel);
+//		getContentPane().add(colorAvailable);
+//		getContentPane().add(selectedLabel);
+//		getContentPane().add(colorSelected);
 		getContentPane().add(saveChoiceButton);
 		
 		showtimesMainPanel = new JPanel();

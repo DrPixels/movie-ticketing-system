@@ -37,6 +37,7 @@ public class RegisterAdmin extends JFrame {
 	private JTextField phoneNumTF;
 	private JTextField usernameTF;
 	private JTextField passwordTF;
+        private JTextField confirmPasswordTF;
 	
 	private JLabel profilePictureLabel;
 	private JButton uploadProfPicButton;
@@ -61,6 +62,7 @@ public class RegisterAdmin extends JFrame {
 	private JLabel phoneNumberLabel;
 	private JLabel usernameLabel;
 	private JLabel passwordLabel;
+        private JLabel confirmPasswordLabel;
 	private JButton registerButton;
 
 	private JButton cancelButton;
@@ -72,6 +74,7 @@ public class RegisterAdmin extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+                            
 				try {
 					RegisterAdmin frame = new RegisterAdmin();
 					frame.setVisible(true);
@@ -83,10 +86,11 @@ public class RegisterAdmin extends JFrame {
 	}
 
 	public RegisterAdmin() {
+            setResizable(false);
             getContentPane().setBackground(new Color(31, 41, 55));
             setTitle("Register Admin");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setBounds(100, 100, 950, 600);
+            setBounds(100, 100, 950, 650);
             setLayout(null);
 
             profilePictureLabel = new JLabel("sdsd");
@@ -153,7 +157,8 @@ public class RegisterAdmin extends JFrame {
 
             firstNameTF = new JTextField();
             firstNameTF.setColumns(10);
-            firstNameTF.setBounds(235, 100, 150, 25);
+            firstNameTF.setBounds(235, 100, 150, 30);
+            firstNameTF.setFont(Helper.fontForTF);
 
             middleNameLabel = new JLabel("Middle Name:");
             middleNameLabel.setForeground(Color.WHITE);
@@ -162,7 +167,8 @@ public class RegisterAdmin extends JFrame {
 
             middleNameTF = new JTextField();
             middleNameTF.setColumns(10);
-            middleNameTF.setBounds(425, 100, 150, 25);
+            middleNameTF.setBounds(425, 100, 150, 30);
+            middleNameTF.setFont(Helper.fontForTF);
 
             lastNameLabel = new JLabel("Last Name:");
             lastNameLabel.setForeground(Color.WHITE);
@@ -171,7 +177,8 @@ public class RegisterAdmin extends JFrame {
 
             lastNameTF = new JTextField();
             lastNameTF.setColumns(10);
-            lastNameTF.setBounds(615, 100, 150, 25);
+            lastNameTF.setBounds(615, 100, 150, 30);
+            lastNameTF.setFont(Helper.fontForTF);
 
             birthdayLabel = new JLabel("Birthday:");
             birthdayLabel.setForeground(Color.WHITE);
@@ -188,10 +195,8 @@ public class RegisterAdmin extends JFrame {
             birthdayDayComboBox.setBounds(345, 180, 50, 25);
 
             birthdayYearComboBox = new JComboBox<>();
-            birthdayYearComboBox.setBounds(405, 180, 60, 25);
+            birthdayYearComboBox.setBounds(405, 180, 70, 25);
             
-            Helper.setupDateComboBoxes(birthdayMonthComboBox, birthdayDayComboBox, birthdayYearComboBox); 
-
             ageLabel = new JLabel("Age:");
             ageLabel.setForeground(Color.WHITE);
             ageLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -200,7 +205,11 @@ public class RegisterAdmin extends JFrame {
 
             ageTF = new JTextField();
             ageTF.setColumns(10);
-            ageTF.setBounds(515, 185, 85, 20);
+            ageTF.setEditable(false);
+            ageTF.setBounds(515, 180, 85, 25);
+            ageTF.setFont(Helper.fontForTF);
+            
+            Helper.setupDateComboBoxes(birthdayMonthComboBox, birthdayDayComboBox, birthdayYearComboBox, ageTF); 
 
             genderLabel = new JLabel("Gender:");
             genderLabel.setForeground(Color.WHITE);
@@ -229,7 +238,8 @@ public class RegisterAdmin extends JFrame {
 
             emailTF = new JTextField();
             emailTF.setColumns(10);
-            emailTF.setBounds(230, 335, 250, 25);
+            emailTF.setBounds(230, 335, 250, 30);
+            emailTF.setFont(Helper.fontForTF);
 
             phoneNumberLabel = new JLabel("Phone Number:");
             phoneNumberLabel.setForeground(Color.WHITE);
@@ -238,7 +248,8 @@ public class RegisterAdmin extends JFrame {
 
             phoneNumTF = new JTextField();
             phoneNumTF.setColumns(10);
-            phoneNumTF.setBounds(530, 335, 250, 25);
+            phoneNumTF.setBounds(530, 335, 250, 30);
+            phoneNumTF.setFont(Helper.fontForTF);
 
             usernameLabel = new JLabel("Username:");
             usernameLabel.setForeground(Color.WHITE);
@@ -247,7 +258,8 @@ public class RegisterAdmin extends JFrame {
 
             usernameTF = new JTextField();
             usernameTF.setColumns(10);
-            usernameTF.setBounds(230, 415, 250, 25);
+            usernameTF.setBounds(230, 415, 250, 30);
+            usernameTF.setFont(Helper.fontForTF);
 
             passwordLabel = new JLabel("Password:");
             passwordLabel.setForeground(Color.WHITE);
@@ -256,13 +268,25 @@ public class RegisterAdmin extends JFrame {
 
             passwordTF = new JTextField();
             passwordTF.setColumns(10);
-            passwordTF.setBounds(530, 415, 250, 25);
+            passwordTF.setBounds(530, 415, 250, 30);
+            passwordTF.setFont(Helper.fontForTF);
+            
+            confirmPasswordLabel = new JLabel("Confirm Password:");
+            confirmPasswordLabel.setForeground(Color.WHITE);
+            confirmPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+            confirmPasswordLabel.setBounds(530, 450, 120, 20);
+            
+            confirmPasswordTF = new JTextField();
+            confirmPasswordTF.setColumns(10);
+            confirmPasswordTF.setBounds(530, 475, 250, 30);
+            confirmPasswordTF.setFont(Helper.fontForTF);
+            
 
             registerButton = new JButton("Register Admin");
             registerButton.setForeground(Color.WHITE);
             registerButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
             registerButton.setBackground(new Color(255, 81, 90));
-            registerButton.setBounds(774, 515, 150, 35);
+            registerButton.setBounds(774, 565, 150, 35);
             registerButton.setFocusable(false);
             
             registerButton.addActionListener(new ActionListener() {
@@ -315,7 +339,7 @@ public class RegisterAdmin extends JFrame {
             cancelButton.setForeground(Color.WHITE);
             cancelButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
             cancelButton.setBackground(new Color(255, 81, 90));
-            cancelButton.setBounds(615, 515, 150, 35);
+            cancelButton.setBounds(615, 565, 150, 35);
             cancelButton.setFocusable(false);
             cancelButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -354,6 +378,8 @@ public class RegisterAdmin extends JFrame {
             add(passwordTF);
             add(registerButton);
             add(cancelButton);
+            add(confirmPasswordLabel);
+            add(confirmPasswordTF);
 	}
      private boolean isFieldsValid() {
          return !(firstNameTF.getText().isEmpty() || 
@@ -364,7 +390,9 @@ public class RegisterAdmin extends JFrame {
                  phoneNumTF.getText().isEmpty() ||
                  usernameTF.getText().isEmpty() ||
                  passwordTF.getText().isEmpty() || 
-                 (!maleRadButton.isSelected() && !femaleRadButton.isSelected()));
+                 (!maleRadButton.isSelected() && !femaleRadButton.isSelected()) ||
+                 (profilePicturePath.equals(Helper.DEFAULT_PROFILE_PIC_PATH)) ||
+                 !(passwordTF.getText().equals(confirmPasswordTF.getText())));
      }
      
 }

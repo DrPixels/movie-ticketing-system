@@ -2,6 +2,8 @@ package staffgui;
 import Database.AdminDatabaseManager;
 import Model.StaffEmployee;
 import Model.Authentication;
+import admingui.About;
+import helper.Helper;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -93,6 +95,14 @@ public class StaffDashboard extends JFrame {
 		bookingHistoryButton.setBackground(new Color(15, 23, 42));
 		bookingHistoryButton.setBounds(20, 260, 160, 25);
 		leftDashboardPanel.add(bookingHistoryButton);
+                
+                JButton aboutButton = new JButton("About");
+		aboutButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		aboutButton.setForeground(new Color(255, 255, 255));
+		aboutButton.setBackground(new Color(17, 24, 39));
+		aboutButton.setBounds(20, 300, 160, 25);
+                aboutButton.setFocusable(false);
+		leftDashboardPanel.add(aboutButton);
 		
 		JButton logoutButton = new JButton("Logout");
 		logoutButton.addActionListener(new ActionListener() {
@@ -110,9 +120,10 @@ public class StaffDashboard extends JFrame {
 		leftDashboardPanel.add(logoutButton);
 		
 		JLabel logoLabel = new JLabel();
-		logoLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		logoLabel.setBounds(75, 630, 50, 50);
-		leftDashboardPanel.add(logoLabel);
+                logoLabel.setPreferredSize(new Dimension(50, 50));
+                Helper.setImageToLabel(logoLabel, Helper.DEFAULT_MOVIE_LOGO_W_O_NAME_PATH);
+		leftDashboardPanel.add(logoLabel);  
 		
 		rightDashboardPanel = new JPanel();
 		rightDashboardPanel.setBackground(new Color(211, 211, 211));
@@ -138,10 +149,20 @@ public class StaffDashboard extends JFrame {
 				rightDashboardPanel.repaint();
 			}
 		});
+                
+		JPanel about = new About();
+		aboutButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rightCardLayout.show(rightDashboardPanel, "About"); // Show Movies panel
+				rightDashboardPanel.revalidate();
+				rightDashboardPanel.repaint();
+			}
+		});
 		
 
 		rightDashboardPanel.add(booking, "Booking");
 		rightDashboardPanel.add(bookingHistory, "Booking History");
+                rightDashboardPanel.add(about, "About");
 //		rightDashboardPanel.add(manageStaff, "Manage Staff");
 		
 		add(leftDashboardPanel);

@@ -66,17 +66,13 @@ public class AdminDashboard extends JFrame {
                 profilePictureLabel.setPreferredSize(new Dimension(110, 110));
 		leftDashboardPanel.add(profilePictureLabel);
                 
-                ImageIcon iconImage = new ImageIcon(adminData.getPicturePath());
-                Image originalImage = iconImage.getImage();
-                Image scaledImage = originalImage.getScaledInstance(profilePictureLabel.getWidth(), profilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
-                ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
-                profilePictureLabel.setIcon(scaledImageIcon);
+                Helper.setImageToLabel(profilePictureLabel, adminData.getPicturePath());
 		
 		JLabel helloLabel = new JLabel("Hello, " + adminData.getFirstName());
 		helloLabel.setForeground(new Color(255, 255, 255));
 		helloLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		helloLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		helloLabel.setBounds(0, 134, 200, 14);
+		helloLabel.setBounds(0, 134, 200, 16);
 		leftDashboardPanel.add(helloLabel);
 		
 		JButton manageMoviesButton = new JButton("Manage Movies");
@@ -168,9 +164,11 @@ public class AdminDashboard extends JFrame {
                 logoutButton.setFocusable(false);
 		leftDashboardPanel.add(logoutButton);
 		
-		JPanel logoPanel = new JPanel();
-		logoPanel.setBounds(75, 630, 50, 50);
-		leftDashboardPanel.add(logoPanel);
+		JLabel logoLabel = new JLabel();
+		logoLabel.setBounds(75, 630, 50, 50);
+                logoLabel.setPreferredSize(new Dimension(50, 50));
+                Helper.setImageToLabel(logoLabel, Helper.DEFAULT_MOVIE_LOGO_W_O_NAME_PATH);
+		leftDashboardPanel.add(logoLabel);         
 		
 		rightDashboardPanel = new JPanel();
 		rightDashboardPanel.setBackground(new Color(211, 211, 211));

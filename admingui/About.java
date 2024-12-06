@@ -1,5 +1,6 @@
 package admingui;
 
+import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.border.LineBorder;
@@ -20,7 +21,12 @@ public class About extends JPanel {
     private JLabel ghazalName;
     private JLabel salvadorPic;
     private JLabel salvadorName;
-
+    
+    private String arevaloPicPath = "D:\\MovieTicketingSystem\\defaultPictures\\arevaloPic.jpg";
+    private String ghazalPicPath = "D:\\MovieTicketingSystem\\defaultPictures\\ghazalPic.jpg";
+    private String bithaoPicPath = "D:\\MovieTicketingSystem\\defaultPictures\\bithaoPic.png";
+    private String salvadorPicPath = "D:\\MovieTicketingSystem\\defaultPictures\\salvadorPic.jpg";
+ 
 
     public About() {
     	setLayout(null);
@@ -36,7 +42,7 @@ public class About extends JPanel {
     	systemDefinition.setBounds(357, 110, 225, 30); 	
     	
     	systemDescription = new JTextArea();
-    	systemDescription.setOpaque(false);
+//    	systemDescription.setOpaque(false);
     	systemDescription.setWrapStyleWord(true);
     	systemDescription.setLineWrap(true);
     	systemDescription.setText("CineBook is a user-friendly movie ticketing system tailored for theater administrators and staff, such as cashiers. It streamlines ticket sales and management by providing tools to handle reservations, process payments, assign seats, and monitor available showtimes. Designed for efficiency, CineBook ensures that staff can quickly assist customers, reduce wait times, and maintain accurate records of transactions. ");
@@ -52,15 +58,18 @@ public class About extends JPanel {
     	arevaloPic = new JLabel();
     	arevaloPic.setBorder(new LineBorder(new Color(0, 0, 0)));
     	arevaloPic.setBounds(110, 370, 120, 120);
-    	
+    	Helper.setImageToLabel(arevaloPic, arevaloPicPath);
+        
     	arevaloName = new JLabel("Arevalo, Samantha Nicole");
     	arevaloName.setHorizontalAlignment(SwingConstants.CENTER);
     	arevaloName.setFont(new Font("Segoe UI", Font.BOLD, 15));
     	arevaloName.setBounds(70, 500, 210, 30);
+        
     	
     	bithaoPic = new JLabel();
     	bithaoPic.setBorder(new LineBorder(new Color(0, 0, 0)));
     	bithaoPic.setBounds(320, 370, 120, 120);
+        Helper.setImageToLabel(bithaoPic, bithaoPicPath);
     	
     	bithaoName = new JLabel("Bithao, Mark");
     	bithaoName.setHorizontalAlignment(SwingConstants.CENTER);
@@ -70,6 +79,8 @@ public class About extends JPanel {
     	ghazalPic = new JLabel();
     	ghazalPic.setBorder(new LineBorder(new Color(0, 0, 0)));
     	ghazalPic.setBounds(510, 370, 120, 120);
+        Helper.setImageToLabel(ghazalPic, ghazalPicPath);
+        
     	
     	ghazalName = new JLabel("Ghazal, Nabila Maxime");
     	ghazalName.setHorizontalAlignment(SwingConstants.CENTER);
@@ -78,7 +89,8 @@ public class About extends JPanel {
     	
     	salvadorPic = new JLabel();
     	salvadorPic.setBorder(new LineBorder(new Color(0, 0, 0)));
-    	salvadorPic.setBounds(720, 370, 120, 120); 	
+    	salvadorPic.setBounds(720, 370, 120, 120); 
+        Helper.setImageToLabel(salvadorPic, salvadorPicPath);
     	
     	salvadorName = new JLabel("Salvador, Rhem Giou ");
     	salvadorName.setHorizontalAlignment(SwingConstants.CENTER);

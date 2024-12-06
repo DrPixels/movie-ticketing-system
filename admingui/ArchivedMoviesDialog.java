@@ -2,6 +2,7 @@ package admingui;
 
 import Database.AdminDatabaseManager;
 import Model.Movie;
+import Model.Theater;
 import helper.Helper;
 import java.awt.FlowLayout;
 
@@ -21,6 +22,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
@@ -52,6 +55,8 @@ public class ArchivedMoviesDialog extends JDialog {
 	}
 
 	public ArchivedMoviesDialog() {
+            setResizable(false);
+        setTitle("Archived Movies");
         setBounds(100, 100, 1175, 685);
         getContentPane().setLayout(null);
 
@@ -122,21 +127,38 @@ public class ArchivedMoviesDialog extends JDialog {
             moviePosterLabel.setIcon(scaledImageIcon);
 
 
-            JButton restoreStaffButton = new JButton("Restore");
-            restoreStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-            restoreStaffButton.addActionListener(new ActionListener() {
+            JButton restoreMoviesButton = new JButton("Restore");
+            restoreMoviesButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            restoreMoviesButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        ChooseTheaterToRestore.movieToRestore = archivedMovie;
+                        ChooseTheaterToRestore chooseTheaterToRestoreDialog = new ChooseTheaterToRestore();
+                        chooseTheaterToRestoreDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
+                        chooseTheaterToRestoreDialog.setVisible(true);
+                        
+                        chooseTheaterToRestoreDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                             staffMainPanel.removeAll();
+                             ArrayList<Movie> archivedMoviesUpdated = AdminDatabaseManager.retrieveArchivedMovies();
+                             for (Movie archivedMovie: archivedMoviesUpdated) {
+                                JPanel newPanel = createMoviePanel(archivedMovie);
+                                staffMainPanel.add(newPanel);
+                            }
+                             
+                             revalidate();
+                             repaint();
+                            
+                            }
+                        });
                     }
             });
 
-            restoreStaffButton.setBounds(225, 290, 115, 25);    
+            restoreMoviesButton.setBounds(225, 290, 115, 25);    
 
-            JTextArea movieTitle = new JTextArea();
-            movieTitle.setOpaque(false);
+            JLabel movieTitle = new JLabel();
             movieTitle.setText(archivedMovie.getMovieName());
             movieTitle.setFont(new Font("Segoe UI", Font.BOLD, 13));
-            movieTitle.setLineWrap(true);
-            movieTitle.setWrapStyleWord(true);
             movieTitle.setBounds(155, 20, 185, 40);
 
             JLabel moviePrice = new JLabel("₱ " + archivedMovie.getMoviePrice());
@@ -179,7 +201,7 @@ public class ArchivedMoviesDialog extends JDialog {
             showtime3.setBounds(20, 245, 320, 14);   
 
             moviePanel.add(moviePosterLabel);
-            moviePanel.add(restoreStaffButton); 
+            moviePanel.add(restoreMoviesButton); 
             moviePanel.add(movieTitle);
             moviePanel.add(moviePrice);
             moviePanel.add(movieGenre);

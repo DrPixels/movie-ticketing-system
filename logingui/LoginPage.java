@@ -7,6 +7,7 @@ import Model.Authentication;
 import Model.AuthenticationStatus;
 import Model.Credential;
 import admingui.AdminDashboard;
+import helper.Helper;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -53,6 +54,8 @@ public class LoginPage extends JFrame {
         
         usernameTF = new JTextField();
         usernameTF.setBounds(40, 145, 270, 30);
+        usernameTF.setFont(Helper.fontForTF);
+        
         
         passwordLabel = new JLabel("Password");
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -60,6 +63,28 @@ public class LoginPage extends JFrame {
         
         passwordTF = new JPasswordField();
         passwordTF.setBounds(40, 225, 270, 30);
+        passwordTF.setFont(Helper.fontForTF);
+        
+        usernameTF.setText("Staff");
+        passwordTF.setText("Staff");
+        
+        JToggleButton showPasswordButton = new JToggleButton("Show");
+        showPasswordButton.setFocusable(false);
+        showPasswordButton.setBounds(115, 201, 60, 20);
+        
+        // Add action listener to toggle password visibility
+        showPasswordButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordButton.isSelected()) {
+                    passwordTF.setEchoChar((char) 0); // Show password
+                    showPasswordButton.setText("Hide");
+                } else {
+                    passwordTF.setEchoChar('*'); // Hide password
+                    showPasswordButton.setText("Show");
+                }
+            }
+        });
+        
         
         loginButton = new JButton("Login");
         loginButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -108,6 +133,7 @@ public class LoginPage extends JFrame {
         leftPanel.add(passwordLabel);
         leftPanel.add(passwordTF);
         leftPanel.add(loginButton);
+        leftPanel.add(showPasswordButton);
    
         registerAsAdminButton = new JButton("Register as Admin?");
         registerAsAdminButton.addActionListener(new ActionListener() {
@@ -128,7 +154,7 @@ public class LoginPage extends JFrame {
         rightLabel.setBounds(0, 0, 334, 361);
         rightLabel.setBackground(Color.red);
         
-        ImageIcon iconImage = new ImageIcon("D:\\Users\\Rhem Giou\\Downloads\\SALVADOR_AT1F Score.png");
+        ImageIcon iconImage = new ImageIcon(Helper.DEFAULT_MOVIE_LOGO_W_NAME_PATH);
         Image originalImage = iconImage.getImage();
         Image scaledImage = originalImage.getScaledInstance(rightLabel.getWidth(), rightLabel.getHeight(), Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
@@ -142,12 +168,12 @@ public class LoginPage extends JFrame {
 
     public static void main(String[] args) {
 
-//        try {
-//            // Set Nimbus Look and Feel
-//            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-//        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-//            e.printStackTrace();  // Print any errors if the Nimbus look and feel can't be set
-//        }
+        try {
+            // Set Nimbus Look and Feel
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();  // Print any errors if the Nimbus look and feel can't be set
+        }
 
         // Create and show the login page
         EventQueue.invokeLater(new Runnable() {

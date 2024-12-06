@@ -1,6 +1,7 @@
 package staffgui;
 
 import Database.StaffDatabaseManager;
+import Model.Authentication;
 import Model.Movie;
 import Model.Seat;
 import Model.Showtime;
@@ -176,14 +177,18 @@ public class PaymentDialog extends JDialog {
                         
                         String selectedPaymentMethod = (String) paymentMethodDropdown.getSelectedItem();
                         
-                        float cashTender = 0;
+ 
+ 
                         
                         if(selectedPaymentMethod.equals("Cash")) {
-                            cashTender = Float.parseFloat(cashTenderTF.getText());
-                        } else {
-                            cashTender = Float.parseFloat(refNumTF.getText());
-                        }
-                         if(!StaffDatabaseManager.addTransactionToBookingTransaction(staffId, 
+                            float cashTender = Float.parseFloat(cashTenderTF.getText());
+                            
+                            if(cashTender < totalPrice) {
+                                JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Insufficient amount. Please try again", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
+                            
+                            if(!StaffDatabaseManager.addCashTransactionToBookingTransaction(staffId, 
                                 theaterData, 
                                 selectedShowtimeId, 
                                 numberOfTickets, 
@@ -192,7 +197,48 @@ public class PaymentDialog extends JDialog {
                                 selectedPaymentMethod, 
                                 selectedSeats)) {
                              JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid action. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
-                         }
+                             
+                         } else {
+                                JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Payment Successful.", "Payment Success", JOptionPane.INFORMATION_MESSAGE);
+                                dispose();
+                                
+                                 ReceiptDialog receiptDialog = new ReceiptDialog();
+
+                                    receiptDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
+                                    receiptDialog.setVisible(true);
+                            }
+                        } else {
+                            String refNum = refNumTF.getText();
+                            System.out.println(refNum);
+                            
+                            if(!StaffDatabaseManager.verifyReferenceNumber(refNum)) {
+                                JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid reference number. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
+                            if(!StaffDatabaseManager.addGCashTransactionToBookingTransaction(staffId, 
+                                theaterData, 
+                                selectedShowtimeId, 
+                                numberOfTickets, 
+                                totalPrice, 
+                                selectedPaymentMethod, 
+                                selectedSeats, refNum)) {
+                             JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid action. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                         } else {
+                                JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Payment Successful.", "Payment Success", JOptionPane.INFORMATION_MESSAGE);
+                                
+                                dispose();
+                                
+                                ReceiptDialog receiptDialog = new ReceiptDialog();
+
+                                    receiptDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
+                                    receiptDialog.setVisible(true);
+                                    
+  
+
+                                    
+                            }
+                        } 
+                         
                         
                     }
                 });

@@ -1,13 +1,16 @@
 package helper;
 
+import Model.Seat;
 import Model.Showtime;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -16,8 +19,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Helper {
     
+    //CONSTANTS
     public static final String DEFAULT_PROFILE_PIC_PATH = "D:\\MovieTicketingSystem\\defaultPictures\\default_profile_picture.png";
     public static final String DEFAULT_MOVIE_POSTER_PATH = "D:\\MovieTicketingSystem\\defaultPictures\\default_movie_poster.png";
+    public static final String DEFAULT_MOVIE_LOGO_W_NAME_PATH = "D:\\MovieTicketingSystem\\defaultPictures\\logos\\logoWithName.png";
+    public static final String DEFAULT_MOVIE_LOGO_W_O_NAME_PATH = "D:\\MovieTicketingSystem\\defaultPictures\\logos\\logoWithoutName.png";
+    
+    //Font for textfields
+    public static Font fontForTF = new Font("Segoe UI", Font.PLAIN, 13);
     
     public static final String[] MONTHS = {"January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
@@ -81,6 +90,63 @@ public class Helper {
         amPmComboBox.addItem("PM");
     }
     
+       public static void setupDateComboBoxes(JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox, JComboBox<Integer> yearComboBox, JTextField ageTF) {
+    // Populate the yearComboBox (if needed)
+    if (yearComboBox.getItemCount() == 0) {
+        for (int year = 1970; year <= 2024; year++) {
+            yearComboBox.addItem(year);
+        }
+    }
+    
+//    // Get the current date
+    LocalDate currentDate = LocalDate.now();
+    int currentYear = currentDate.getYear();
+    int currentMonth = currentDate.getMonthValue() - 1; // Month is 0-based in JComboBox
+    int currentDay = currentDate.getDayOfMonth();
+//
+//    // Set the selected values in the JComboBoxes
+    monthComboBox.setSelectedIndex(currentMonth);
+    yearComboBox.setSelectedItem(currentYear);
+    updateDays(dayComboBox, currentMonth, currentYear, ageTF);
+    dayComboBox.setSelectedItem(currentDay);
+
+    // Action listener to update days based on month and year selection
+    ActionListener updateDaysListener = e -> {
+        int selectedMonth = monthComboBox.getSelectedIndex(); // 0-based index
+        int selectedYear = (int) yearComboBox.getSelectedItem();
+        updateDays(dayComboBox, selectedMonth, selectedYear, ageTF);
+    };
+
+    // Add the listener to month and year JComboBoxes
+    monthComboBox.addActionListener(updateDaysListener);
+    yearComboBox.addActionListener(updateDaysListener);
+}
+       
+   private static void updateDays(JComboBox<Integer> dayComboBox, int month, int year, JTextField ageTF) {
+       int previouslySelectedDay = (dayComboBox.getSelectedItem() != null) ? (int) dayComboBox.getSelectedItem() : 1;
+
+       dayComboBox.removeAllItems();  // Clear existing days
+
+       int daysInMonth = getDaysInMonth(month, year);
+
+       // Repopulate with the correct number of days
+       for (int i = 1; i <= daysInMonth; i++) {
+           dayComboBox.addItem(i);
+       }
+
+       // Set the previously selected day if still valid, otherwise select the last valid day
+       if (previouslySelectedDay > daysInMonth) {
+           dayComboBox.setSelectedItem(daysInMonth);
+       } else {
+           dayComboBox.setSelectedItem(previouslySelectedDay);
+       }
+   
+       String day = dayComboBox.getSelectedItem().toString();
+       LocalDate birthday = LocalDate.of(year, month + 1, Integer.parseInt(day));
+       
+       ageTF.setText(String.valueOf(calculateAge(birthday)));
+   }
+              
 // Method to set up the dynamic day JComboBox and set the current date
     //Including the age to update textfield
    public static void setupDateComboBoxes(JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox, JComboBox<Integer> yearComboBox) {
@@ -262,6 +328,38 @@ private static int getDaysInMonth(int month, int year) {
         
         // Format the LocalDate object to the desired string format
         return date.format(outputFormatter);
+    }
+    
+    public static String formatSeatList(ArrayList<Seat> seats) {
+        
+        ArrayList<String> seatLabels = new ArrayList<>();
+        
+        for(Seat seat: seats) {
+            seatLabels.add(seat.getSeatNumber());
+        }
+        // Use String.join to handle concatenation without trailing comma
+        return String.join(", ", seatLabels);
+    }
+    
+    public static String formatPrice(double num) {
+        return String.format("%.2f", num);
+    }
+    
+        // Helper method to set an image to a JLabel with scaling
+    public static void setImageToLabel(JLabel label, String imagePath) {
+        ImageIcon iconImage = new ImageIcon(imagePath);
+        Image originalImage = iconImage.getImage();
+        
+        // Scale the image to fit the label dimensions
+        Image scaledImage = originalImage.getScaledInstance(
+            label.getWidth(), 
+            label.getHeight(), 
+            Image.SCALE_SMOOTH
+        );
+        
+        // Set the scaled image to the label
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+        label.setIcon(scaledImageIcon);
     }
     
 }

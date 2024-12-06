@@ -197,7 +197,7 @@ public class Reports extends JPanel {
     	theatreTicketsSold.setBounds(20, 46, 110, 25);
     	theatreTicketsSold.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	
-    	JLabel theaterRevenue = new JLabel("₱ " + theaterSalesData.getTotalTickets());
+    	JLabel theaterRevenue = new JLabel("₱ " + (theaterSalesData.getTotalAmount()));
     	theaterRevenue.setBounds(20, 76, 110, 25);
     	theaterRevenue.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	

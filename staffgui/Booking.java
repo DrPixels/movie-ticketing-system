@@ -4,6 +4,7 @@ import Database.AdminDatabaseManager;
 import Database.StaffDatabaseManager;
 import Model.Authentication;
 import Model.Seat;
+import Model.StaffEmployee;
 import Model.Theater;
 import helper.Helper;
 import javax.swing.*;
@@ -18,6 +19,7 @@ import javax.swing.border.SoftBevelBorder;
 
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import logingui.RegisterAdmin;
 
 public class Booking extends JPanel {
 
@@ -54,7 +56,13 @@ public class Booking extends JPanel {
     		@Override
             public void actionPerformed(ActionEvent e) {
                 
+
                 String selectedTheaterId = Helper.returnActionCommandOfWhatisSelectedButton(buttonGroup);
+                
+                if(selectedTheaterId.equals("0")) {
+                    JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Select a movie first.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 
                 for(Theater theaterData: theatersData) {
                     if(String.valueOf(theaterData.getTheaterId()).equals(selectedTheaterId)) {
@@ -88,20 +96,50 @@ public class Booking extends JPanel {
     	proceedToPaymentButton.addActionListener(new ActionListener() {
     		@Override
             public void actionPerformed(ActionEvent e) {
-                // Create a custom dialog 
-                for(Theater theaterData: theatersData) {
-                    if(String.valueOf(theaterData.getTheaterId()).equals(selectedTheaterId)) {
-                        PaymentDialog.theaterData = theaterData;
-                    }
-                }
-                PaymentDialog.staffId = Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID;
-                PaymentDialog.selectedShowtimeId = selectedShowtimeId;
-                PaymentDialog.selectedSeats = selectedSeats;
-            	PaymentDialog paymentDialog = new PaymentDialog();
                 
+                if(selectedSeats == null || selectedSeats.isEmpty()) {
+                    JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Select a showtime and seats first.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                    return;
+                } 
+                
+                
+                    for(Theater theaterData: theatersData) {
+                        if(String.valueOf(theaterData.getTheaterId()).equals(selectedTheaterId)) {
+                            PaymentDialog.theaterData = theaterData;
+                        }
+                    }
+                    PaymentDialog.staffId = Authentication.CURRENTLY_LOGIN_EMPLOYEE_ID;
+                    PaymentDialog.selectedShowtimeId = selectedShowtimeId;
+                    PaymentDialog.selectedSeats = selectedSeats;
+                    PaymentDialog paymentDialog = new PaymentDialog();
+                    paymentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-            	paymentDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
-            	paymentDialog.setVisible(true);
+
+                    paymentDialog.setLocationRelativeTo(parent); // Center the dialog relative to the frame
+                    paymentDialog.setVisible(true);
+                    
+                    paymentDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                            moviesPanel.removeAll();
+                            theatersData = StaffDatabaseManager.retrieveTheaterData();
+                            for(Theater theaterData: theatersData) {
+                                if(theaterData.getShowingMovie() != null) {
+                                     JPanel newPanel = createMoviePanel(theaterData);
+
+                                    moviesPanel.add(newPanel);
+                                }
+                            }
+
+                            revalidate();
+                            repaint();
+                            
+                            }
+                        });
+                
+                
+                // Create a custom dialog 
+
             }
     	});
     	proceedToPaymentButton.setForeground(Color.WHITE);

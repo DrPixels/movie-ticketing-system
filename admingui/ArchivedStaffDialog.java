@@ -3,6 +3,7 @@ package admingui;
 import Database.AdminDatabaseManager;
 import Model.Movie;
 import Model.StaffEmployee;
+import helper.Helper;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
@@ -23,16 +24,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import logingui.RegisterAdmin;
 
 public class ArchivedStaffDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	
-	private JTextField textField;
+	private JTextField searchField;
 	
 	private JPanel titlePanel;
 	private JLabel listOfArchiveStaffLabel;
@@ -55,7 +60,8 @@ public class ArchivedStaffDialog extends JDialog {
 	}
 
 	public ArchivedStaffDialog() {
-		
+            setResizable(false);
+		setTitle("List of Archived Staff");
 		setBounds(100, 100, 1000, 685);
 		getContentPane().setLayout(null);
 
@@ -87,18 +93,36 @@ public class ArchivedStaffDialog extends JDialog {
         	staffMainPanel.add(newPanel);
         }
 
-		searchLabel = new JLabel("Search:");
-		searchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		searchLabel.setBounds(734, 83, 52, 25);
+        searchLabel = new JLabel("Search:");
+        searchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        searchLabel.setBounds(734, 83, 52, 25);
 
-		textField = new JTextField();
-		textField.setColumns(10);
-		textField.setBounds(789, 78, 190, 30);
+        searchField = new JTextField();
+        searchField.setColumns(10);
+        searchField.setBounds(789, 78, 190, 30);
+                
+                               // Add DocumentListener to the search field
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterProducts();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterProducts();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filterProducts();
+            }
+        });
 		
 		add(titlePanel);
 		add(scrollPane);
 		add(searchLabel);
-		add(textField);
+		add(searchField);
 	}
 	
 	private JPanel createStaffPanel(StaffEmployee staffData) {
@@ -111,8 +135,7 @@ public class ArchivedStaffDialog extends JDialog {
         JLabel staffProfilePictureLabel = new JLabel();
         staffProfilePictureLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
         staffProfilePictureLabel.setBounds(60, 15, 100, 100);
-        
-        
+
         ImageIcon iconImage = new ImageIcon(staffData.getPicturePath());
         Image originalImage = iconImage.getImage();
         Image scaledImage = originalImage.getScaledInstance(staffProfilePictureLabel.getWidth(), staffProfilePictureLabel.getHeight(), Image.SCALE_SMOOTH);
@@ -133,6 +156,26 @@ public class ArchivedStaffDialog extends JDialog {
         restoreStaffButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         restoreStaffButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+                    int response = JOptionPane.showConfirmDialog(null, "Do you wish to continue?", "Restore Staff", JOptionPane.YES_NO_OPTION);
+                   
+                        if (response == JOptionPane.YES_OPTION) {
+                            if(!AdminDatabaseManager.restoreStaff(staffData.getEmployeeId())) {
+                                JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid action. Please try again later.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "The staff was restored successfully.", "Successful Action", JOptionPane.INFORMATION_MESSAGE);
+                                staffMainPanel.removeAll();
+                                archivedStaffEmployees = AdminDatabaseManager.retrieveArchivedStaffEmployees();
+                                for (StaffEmployee staffEmployee: archivedStaffEmployees) {
+                                    JPanel newPanel = createStaffPanel(staffEmployee);
+
+                                    staffMainPanel.add(newPanel);
+                                 }
+                                revalidate();
+                                repaint();
+                            }
+                            
+                        } 
+                    
         	}
         });
         restoreStaffButton.setBounds(90, 240, 115, 25);  
@@ -143,6 +186,23 @@ public class ArchivedStaffDialog extends JDialog {
         staffPanel.add(restoreStaffButton);
         
         return staffPanel;
+    }
+        
+            private void filterProducts() {
+        String searchText = searchField.getText().toLowerCase();
+        staffMainPanel.removeAll(); // Remove all products from the container
+        
+        for (StaffEmployee staffEmployee: archivedStaffEmployees) {
+            String staffFullName = staffEmployee.getFirstName() + " " + staffEmployee.getMiddleName() + " " + staffEmployee.getLastName();
+            if(staffFullName.toLowerCase().contains(searchText)) {
+                JPanel newPanel = createStaffPanel(staffEmployee);  // Create custom panels
+                staffMainPanel.add(newPanel);
+            }
+            
+    	}
+
+        staffMainPanel.revalidate();
+        staffMainPanel.repaint();
     }
 
 }

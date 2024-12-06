@@ -1149,6 +1149,35 @@ public class AdminDatabaseManager extends DatabaseManager{
         
     }
     
+    public static boolean restoreMovie(String movieId, int theaterId) {
+        String restoreMovieQuery = "UPDATE theaters SET movie_id = ? WHERE theater_id = ? ";
+        String updateMovieQuery = "UPDATE movies SET is_archived = ? WHERE movie_id = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(restoreMovieQuery);
+            
+            prepSt.setString(1, movieId);
+            prepSt.setInt(2, theaterId);
+            
+            prepSt.executeUpdate();
+            
+            PreparedStatement prepSt2 = connection.prepareStatement(updateMovieQuery);
+            prepSt2.setBoolean(1, false);
+            prepSt2.setString(2, movieId);
+            
+            prepSt2.executeUpdate();
+            return true;
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return false;
+    }
+    
     public static boolean archiveMovie(String movieId) {
         String archiveMovieQuery = "UPDATE movies SET is_archived = ? WHERE movie_id = ? ";
         String removeMovieFromTheater = "UPDATE theaters SET movie_id = ? WHERE movie_id = ? ";
@@ -1231,7 +1260,7 @@ public class AdminDatabaseManager extends DatabaseManager{
         
     }
     
-        public static boolean archiveStaff(String employeeId) {
+    public static boolean archiveStaff(String employeeId) {
         String archiveStaffQuery = "UPDATE staff_status SET is_archived = ? WHERE employee_id = ? ";
         
         try {
@@ -1239,6 +1268,29 @@ public class AdminDatabaseManager extends DatabaseManager{
             PreparedStatement prepSt = connection.prepareStatement(archiveStaffQuery);
             
             prepSt.setBoolean(1, true);
+            prepSt.setString(2, employeeId);
+            
+            prepSt.executeUpdate();
+
+            return true;
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return false;
+    }  
+    
+    public static boolean restoreStaff(String employeeId) {
+        String archiveStaffQuery = "UPDATE staff_status SET is_archived = ? WHERE employee_id = ? ";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(archiveStaffQuery);
+            
+            prepSt.setBoolean(1, false);
             prepSt.setString(2, employeeId);
             
             prepSt.executeUpdate();

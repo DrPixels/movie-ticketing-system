@@ -69,6 +69,8 @@ public class EditStaffDialog extends JDialog {
 	private JTextField passwordTF;
 	
 	private JButton saveStaffButton;
+                private JTextField confirmPasswordTF;
+        private JLabel confirmPasswordLabel;
         
         //Fields
         public static String staffId;
@@ -86,6 +88,7 @@ public class EditStaffDialog extends JDialog {
 	}
 
 	public EditStaffDialog() {
+            setResizable(false);
 		getContentPane().setBackground(new Color(55, 65, 81));
 		setTitle("Add Staff");
 		setBounds(100, 100, 950, 600);
@@ -150,8 +153,9 @@ public class EditStaffDialog extends JDialog {
 		
 		firstNameTF = new JTextField();
 		firstNameTF.setColumns(10);
-		firstNameTF.setBounds(235, 100, 150, 25);
+		firstNameTF.setBounds(235, 100, 150, 30);
                 firstNameTF.setText(staffData.getFirstName());
+                firstNameTF.setFont(Helper.fontForTF);
 		
 		middleNameLabel = new JLabel("Middle Name:");
 		middleNameLabel.setForeground(Color.WHITE);
@@ -160,8 +164,9 @@ public class EditStaffDialog extends JDialog {
 		
 		middleNameTF = new JTextField();
 		middleNameTF.setColumns(10);
-		middleNameTF.setBounds(425, 100, 150, 25);
+		middleNameTF.setBounds(425, 100, 150, 30);
                 middleNameTF.setText(staffData.getMiddleName());
+                middleNameTF.setFont(Helper.fontForTF);
 		
 		lastNameLabel = new JLabel("Last Name:");
 		lastNameLabel.setForeground(Color.WHITE);
@@ -170,8 +175,9 @@ public class EditStaffDialog extends JDialog {
 		
 		lastNameTF = new JTextField();
 		lastNameTF.setColumns(10);
-		lastNameTF.setBounds(615, 100, 150, 25);
+		lastNameTF.setBounds(615, 100, 150, 30);
                 lastNameTF.setText(staffData.getLastName());
+                lastNameTF.setFont(Helper.fontForTF);
 		
 		birthdayLabel = new JLabel("Birthday:");
 		birthdayLabel.setForeground(Color.WHITE);
@@ -188,7 +194,7 @@ public class EditStaffDialog extends JDialog {
 		birthdayDayComboBox.setBounds(345, 180, 50, 25);
 		
 		birthdayYearComboBox = new JComboBox<>();
-		birthdayYearComboBox.setBounds(407, 180, 60, 25);
+		birthdayYearComboBox.setBounds(407, 180, 70, 25);
                 
                 Helper.setupDateComboBoxes(birthdayMonthComboBox, birthdayDayComboBox, birthdayYearComboBox);
                 
@@ -205,7 +211,9 @@ public class EditStaffDialog extends JDialog {
 		ageTF = new JTextField();
                 ageTF.setText(String.valueOf(staffData.getAge()));
 		ageTF.setColumns(10);
-		ageTF.setBounds(515, 185, 86, 20);	
+                ageTF.setEditable(false);
+		ageTF.setBounds(515, 180, 86, 25);
+                ageTF.setFont(Helper.fontForTF);
 		
 		genderLabel = new JLabel("Gender:");
 		genderLabel.setForeground(Color.WHITE);
@@ -239,9 +247,10 @@ public class EditStaffDialog extends JDialog {
 		
 		emailTF = new JTextField();
 		emailTF.setColumns(10);
-		emailTF.setBounds(230, 335, 250, 25);
+		emailTF.setBounds(230, 335, 250, 30);
                 emailTF.setText(staffData.getEmail());
-		
+		emailTF.setFont(Helper.fontForTF);
+                
 		phoneNumberLabel = new JLabel("Phone Number:");
 		phoneNumberLabel.setForeground(Color.WHITE);
 		phoneNumberLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -249,8 +258,9 @@ public class EditStaffDialog extends JDialog {
 		
 		phoneNumberTF = new JTextField();
 		phoneNumberTF.setColumns(10);
-		phoneNumberTF.setBounds(530, 335, 250, 25);
+		phoneNumberTF.setBounds(530, 335, 250, 30);
                 phoneNumberTF.setText(staffData.getPhoneNumber());
+                phoneNumberTF.setFont(Helper.fontForTF);
 		
 		usernameLabel = new JLabel("Username:");
 		usernameLabel.setForeground(Color.WHITE);
@@ -260,8 +270,9 @@ public class EditStaffDialog extends JDialog {
 		
 		usernameTF = new JTextField();
 		usernameTF.setColumns(10);
-		usernameTF.setBounds(230, 415, 250, 25);
+		usernameTF.setBounds(230, 415, 250, 30);
                 usernameTF.setText(staffData.getUsername());
+                usernameTF.setFont(Helper.fontForTF);
 		add(usernameTF);
 		
 		passwordLabel = new JLabel("Password:");
@@ -272,9 +283,23 @@ public class EditStaffDialog extends JDialog {
 		
 		passwordTF = new JTextField();
 		passwordTF.setColumns(10);
-		passwordTF.setBounds(530, 415, 250, 25);
+		passwordTF.setBounds(530, 415, 250, 30);
                 passwordTF.setText(staffData.getPassword());
+                passwordTF.setFont(Helper.fontForTF);
 		add(passwordTF);
+                
+                confirmPasswordLabel = new JLabel("Confirm Password:");
+                confirmPasswordLabel.setForeground(Color.WHITE);
+                confirmPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+                confirmPasswordLabel.setBounds(530, 450, 120, 20);
+                add(confirmPasswordLabel);
+
+                confirmPasswordTF = new JTextField();
+                confirmPasswordTF.setColumns(10);
+                confirmPasswordTF.setBounds(530, 475, 250, 30);
+                confirmPasswordTF.setFont(Helper.fontForTF);
+                confirmPasswordTF.setFont(Helper.fontForTF);
+                add(confirmPasswordTF);
 		
 		saveStaffButton = new JButton("Save Staff");
 		saveStaffButton.setForeground(Color.WHITE);

@@ -1,10 +1,12 @@
 package Database;
 
 import static Database.DatabaseManager.connection;
+import Model.BookingTransaction;
 import Model.Movie;
 import Model.SalesData;
 import Model.Seat;
 import Model.Showtime;
+import Model.StaffEmployee;
 import Model.Theater;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -96,6 +98,39 @@ public class StaffDatabaseManager extends DatabaseManager{
         return null;
     }
     
+    public static Showtime retrieveShowtimeByShowtimeId(String showtimeId) {
+        String query = "SELECT * FROM showtimes WHERE showtime_id = ? ";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            
+            prepSt.setString(1, showtimeId);
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            
+            if(rs.next()) { 
+                
+                Timestamp showDateTime = rs.getTimestamp("start_time");
+                
+                // Convert Timestamp to LocalDate and LocalTime
+                LocalDateTime localShowDateTime = showDateTime.toLocalDateTime();
+                
+                ArrayList<Seat> showtimeSeats = retrieveSeatsByShowtimeId(showtimeId);
+                
+                return new Showtime(showtimeId, localShowDateTime, showtimeSeats);
+                
+            }     
+            
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return null;
+    }
+    
     public static ArrayList<Showtime> retrieveMovieShowtimeDataById(String movieId) {
         String query = "SELECT * FROM showtimes WHERE movie_id = ? ";
         
@@ -163,7 +198,41 @@ public class StaffDatabaseManager extends DatabaseManager{
         return null;
     }
     
-     public static boolean addTransactionToBookingTransaction(String employeeId, Theater theaterData, String showtimeId, int numberOfTickets, float transactionAmount, float cashTender, String paymentMethod, ArrayList<Seat> selectedSeats) {
+        public static ArrayList<Seat> retrieveSeatsFromBookingSeatasByBookingTransactionId(String bookingTransactionId) {
+        String query = """
+                       SELECT * FROM booking_seats JOIN seats ON seats.seat_id = booking_seats.seat_id
+                       WHERE booking_transaction_id = ? 
+                       ORDER BY LEFT(seats.seat_number, 1), CAST(SUBSTRING(seats.seat_number, 2) AS UNSIGNED);""";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);       
+            
+            prepSt.setString(1, bookingTransactionId);
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            ArrayList<Seat> showtimeSeats = new ArrayList<>();
+            
+            while(rs.next()) {
+                
+                String seatId = rs.getString("seat_id");
+                String seatNumber = rs.getString("seat_number");
+                String status = rs.getString("status");
+                
+                showtimeSeats.add(new Seat(seatId, seatNumber, status));
+            }
+
+            return showtimeSeats;
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        return null;
+    }
+   
+    
+     public static boolean addCashTransactionToBookingTransaction(String employeeId, Theater theaterData, String showtimeId, int numberOfTickets, float transactionAmount, float cashTender, String paymentMethod, ArrayList<Seat> selectedSeats) {
         String archiveStaffQuery = "INSERT INTO booking_transactions (booking_transaction_id, employee_id, theater_id, movie_id, showtime_id, no_of_tickets, transaction_amount, cash_tender, payment_method) VALUES(?,?,?,?,?,?,?,?,?)";
         
                 //Fix, auto-generated
@@ -181,6 +250,40 @@ public class StaffDatabaseManager extends DatabaseManager{
             prepSt.setFloat(7, transactionAmount);
             prepSt.setFloat(8, cashTender);
             prepSt.setString(9, paymentMethod);
+            
+            prepSt.executeUpdate();
+            
+            addSeatsToBookingSeats(bookingTransactionId, selectedSeats);
+
+            return true;
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return false;
+    }
+     
+     public static boolean addGCashTransactionToBookingTransaction(String employeeId, Theater theaterData, String showtimeId, int numberOfTickets, float transactionAmount, String paymentMethod, ArrayList<Seat> selectedSeats, String referenceNumber) {
+        String archiveStaffQuery = "INSERT INTO booking_transactions (booking_transaction_id, employee_id, theater_id, movie_id, showtime_id, no_of_tickets, transaction_amount, payment_method, reference_number) VALUES(?,?,?,?,?,?,?,?,?)";
+        
+                //Fix, auto-generated
+        String bookingTransactionId = UUID.randomUUID().toString();
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(archiveStaffQuery);
+            
+            prepSt.setString(1, bookingTransactionId);
+            prepSt.setString(2, employeeId);
+            prepSt.setInt(3, theaterData.getTheaterId());
+            prepSt.setString(4, theaterData.getShowingMovie().getMovieId());
+            prepSt.setString(5, showtimeId);
+            prepSt.setInt(6, numberOfTickets);
+            prepSt.setFloat(7, transactionAmount);
+            prepSt.setString(8, paymentMethod);
+            prepSt.setString(9, referenceNumber);
             
             prepSt.executeUpdate();
             
@@ -354,6 +457,108 @@ public class StaffDatabaseManager extends DatabaseManager{
         } 
         
         return null;
+   
+    }
+    
+    public static BookingTransaction retrieveBookingTransaction(String bookingTransactionId) {
+        String query = "SELECT * FROM booking_transactions JOIN booking_seats ON booking_transactions.booking_transaction_id = booking_seats.booking_transaction_id WHERE booking_transactions.booking_transaction_id = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            prepSt.setString(1, bookingTransactionId);
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            if(rs.next()) {
+                Timestamp bookingDateTimestamp = rs.getTimestamp("booking_date");
+                LocalDateTime bookingDate = bookingDateTimestamp.toLocalDateTime();
+                String staffEmployeeId = rs.getString("employee_id");
+                int theaterId = rs.getInt("theater_id");
+                String movieId = rs.getString("movie_id");
+                String showtimeId = rs.getString("showtime_id");
+                int numberOfTickets = rs.getInt("no_of_tickets");
+                float transactionAmount = rs.getFloat("transaction_amount");
+                float cashTender = rs.getFloat("cash_tender");
+                String paymentMethod = rs.getString("payment_method");
+                String referenceNumber = rs.getString("reference_number");
+                
+                return new BookingTransaction(bookingTransactionId, bookingDate, staffEmployeeId, theaterId, movieId, showtimeId, numberOfTickets, transactionAmount, cashTender, paymentMethod, referenceNumber );
+            }
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return null;
+   
+    }
+    
+    public static BookingTransaction retrieveLatestTransaction() {
+        String query = """
+                       SELECT *
+                       FROM booking_transactions 
+                       ORDER BY booking_date DESC
+                       LIMIT 1""";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            if(rs.next()) {
+                String bookingTransactionId = rs.getString("booking_transaction_id");
+                Timestamp bookingDateTimestamp = rs.getTimestamp("booking_date");
+                LocalDateTime bookingDate = bookingDateTimestamp.toLocalDateTime();
+                String staffEmployeeId = rs.getString("employee_id");
+                int theaterId = rs.getInt("theater_id");
+                String movieId = rs.getString("movie_id");
+                String showtimeId = rs.getString("showtime_id");
+                int numberOfTickets = rs.getInt("no_of_tickets");
+                float transactionAmount = rs.getFloat("transaction_amount");
+                float cashTender = rs.getFloat("cash_tender");
+                String paymentMethod = rs.getString("payment_method");
+                String referenceNumber = rs.getString("reference_number");
+                
+                return new BookingTransaction(bookingTransactionId, bookingDate, staffEmployeeId, theaterId, movieId, showtimeId, numberOfTickets, transactionAmount, cashTender, paymentMethod, referenceNumber );
+            }
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return null;
+   
+    }
+    
+    
+    
+    public static boolean verifyReferenceNumber(String referenceNumber) {
+        String query = "SELECT * FROM gcash_reference_number WHERE gcash_reference_number = ?";
+        
+        try {
+            // Execute the query and get results
+            PreparedStatement prepSt = connection.prepareStatement(query);
+            prepSt.setString(1, referenceNumber);
+            
+            ResultSet rs = prepSt.executeQuery();
+            
+            if(rs.next()) {
+               return true;
+            }
+            
+//            return movieShowtimes;  
+        } catch (SQLException e) {
+            // Handle SQL errors during query execution
+            e.printStackTrace(); 
+        } 
+        
+        return false;
    
     }
     

@@ -106,6 +106,7 @@ public class AddMovieDialog extends JDialog {
 	}
 
 	public AddMovieDialog() {
+            setResizable(false);
 		getContentPane().setBackground(new Color(55, 65, 81));
 		setTitle("Add Movie");
 		setBounds(100, 100, 950, 600);
@@ -118,7 +119,7 @@ public class AddMovieDialog extends JDialog {
 
 		theaterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		theaterLabel = new JLabel("THEATER 1");
+		theaterLabel = new JLabel("THEATER " + theaterId);
 		theaterLabel.setForeground(new Color(255, 255, 255));
 		theaterLabel.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 14));
 		theaterPanel.add(theaterLabel);
@@ -140,7 +141,8 @@ public class AddMovieDialog extends JDialog {
 		
 		movieNameTF = new JTextField();
 		movieNameTF.setColumns(10);
-		movieNameTF.setBounds(200, 75, 230, 25);
+		movieNameTF.setBounds(200, 75, 230, 30);
+                movieNameTF.setFont(Helper.fontForTF);
 		
 		moviePriceLabel = new JLabel("Price:");
 		moviePriceLabel.setForeground(new Color(255, 255, 255));
@@ -149,8 +151,9 @@ public class AddMovieDialog extends JDialog {
 		
 		moviePriceTF = new JTextField();
 		moviePriceTF.setColumns(10);
-		moviePriceTF.setBounds(200, 145, 115, 25);
-		
+		moviePriceTF.setBounds(200, 145, 115, 30);
+		moviePriceTF.setFont(Helper.fontForTF);
+                
 		genre1Label = new JLabel("Genre 1:");
 		genre1Label.setForeground(new Color(255, 255, 255));
 		genre1Label.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -158,6 +161,21 @@ public class AddMovieDialog extends JDialog {
 		
 		genre1ComboBox = new JComboBox<>(Helper.GENRES);
 		genre1ComboBox.setBounds(200, 215, 115, 25);
+                
+                        // Add an ActionListener to the JComboBox
+                genre1ComboBox.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Get the selected item
+                        String selectedOption = (String) genre1ComboBox.getSelectedItem();
+
+                        if(selectedOption.equals("Select Genre")) {
+                            genre2ComboBox.setEnabled(false);
+                        } else {
+                            genre2ComboBox.setEnabled(true);
+                        }
+                    }
+                });
 		
 		genre2Label = new JLabel("Genre 2 (optional):");
 		genre2Label.setForeground(new Color(255, 255, 255));
@@ -166,6 +184,7 @@ public class AddMovieDialog extends JDialog {
 		
 		genre2ComboBox = new JComboBox<>(Helper.GENRES);
 		genre2ComboBox.setBounds(340, 215, 115, 25);	
+                genre2ComboBox.setEnabled(false);
 		
 		durationLabel = new JLabel("Duration (minutes):");
 		durationLabel.setForeground(new Color(255, 255, 255));
@@ -193,6 +212,7 @@ public class AddMovieDialog extends JDialog {
                             time1MinsComboBox.setEnabled(false);
                             time1AMPMComboBox.setEnabled(false);
                             
+                            showtime2ToggleButton.setEnabled(false);
                         } else {
                             date1MonthComboBox.setEnabled(true);
                             date1DayComboBox.setEnabled(true);
@@ -201,6 +221,9 @@ public class AddMovieDialog extends JDialog {
                             time1HoursComboBox.setEnabled(true);
                             time1MinsComboBox.setEnabled(true);
                             time1AMPMComboBox.setEnabled(true);
+                            
+                            showtime2ToggleButton.setSelected(false);
+                            showtime2ToggleButton.setEnabled(true);
                         }
                         
                         revalidate();
@@ -279,7 +302,7 @@ public class AddMovieDialog extends JDialog {
 		date1DayComboBox.setBounds(630, 150, 50, 25);
 				
 		date1YearComboBox = new JComboBox<>();
-		date1YearComboBox.setBounds(690, 150, 60, 25);
+		date1YearComboBox.setBounds(690, 150, 70, 25);
                 
                 Helper.setupDateComboBoxes(date1MonthComboBox, date1DayComboBox, date1YearComboBox);
 		
@@ -321,7 +344,8 @@ public class AddMovieDialog extends JDialog {
                 
                 showtime2ToggleButton = new JToggleButton("Add");
                 showtime2ToggleButton.setBounds(650, 280, 70, 20);
-                showtime2ToggleButton.setFocusable(true);
+                showtime2ToggleButton.setFocusable(false);
+                showtime2ToggleButton.setEnabled(false);
                 add(showtime2ToggleButton);
                 
                 showtime2ToggleButton.addActionListener(new ActionListener() {
@@ -329,15 +353,25 @@ public class AddMovieDialog extends JDialog {
                     public void actionPerformed(ActionEvent e) {
                         // Check if the toggle button is selected or not
                         boolean isSelected = showtime2ToggleButton.isSelected();
+                        System.out.println(isSelected);
                         int durationSpinnerValue = (int) durationSpinner.getValue();
-                        if (!isSelected &&  durationSpinnerValue != 0) {       
-                            time2AMPMComboBox.setEnabled(false);
-                            time2HoursComboBox.setEnabled(false);
-                            time2MinsComboBox.setEnabled(false);
-                        } else {
+                        if (isSelected &&  durationSpinnerValue != 0) {       
                             time2HoursComboBox.setEnabled(true);
                             time2MinsComboBox.setEnabled(true);
                             time2AMPMComboBox.setEnabled(true);
+                            showtime3ToggleButton.setSelected(false);
+                            showtime3ToggleButton.setEnabled(true);
+
+                        } else {
+                            time2AMPMComboBox.setEnabled(false);
+                            time2HoursComboBox.setEnabled(false);
+                            time2MinsComboBox.setEnabled(false);
+                            showtime3ToggleButton.setSelected(false);
+                            showtime3ToggleButton.setEnabled(false);
+                            time3HoursComboBox.setEnabled(false);
+                            time3MinutesComboBox.setEnabled(false);
+                            time3AMPMComboBox.setEnabled(false);
+                            
                         }
                     } 
                 });
@@ -351,7 +385,7 @@ public class AddMovieDialog extends JDialog {
                 
                 showtime3ToggleButton = new JToggleButton("Add");
                 showtime3ToggleButton.setBounds(650, 360, 70, 20);
-                showtime3ToggleButton.setFocusable(true);
+                showtime3ToggleButton.setFocusable(false);
                 add(showtime3ToggleButton);
 		
 		time3Label = new JLabel("Time:");
@@ -369,20 +403,22 @@ public class AddMovieDialog extends JDialog {
 		time3AMPMComboBox = new JComboBox<>();
 		time3AMPMComboBox.setBounds(700, 400, 50, 25);
                 
+                showtime3ToggleButton.setEnabled(false);
                 showtime3ToggleButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Check if the toggle button is selected or not
                         boolean isSelected = showtime3ToggleButton.isSelected();
                         int durationSpinnerValue = (int) durationSpinner.getValue();
-                        if (!isSelected &&  durationSpinnerValue != 0) {
-                            time3HoursComboBox.setEnabled(false);
-                            time3MinutesComboBox.setEnabled(false);
-                            time3AMPMComboBox.setEnabled(false);
-                        } else {
+                        if (isSelected &&  durationSpinnerValue != 0 && showtime2ToggleButton.isSelected()) {
                             time3HoursComboBox.setEnabled(true);
                             time3MinutesComboBox.setEnabled(true);
                             time3AMPMComboBox.setEnabled(true);
+                           
+                        } else {
+                            time3HoursComboBox.setEnabled(false);
+                            time3MinutesComboBox.setEnabled(false);
+                            time3AMPMComboBox.setEnabled(false);
                         }
                     } 
                 });
@@ -416,7 +452,15 @@ public class AddMovieDialog extends JDialog {
                    if(!isFieldsValid()) {
                        JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Missing fields. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
                        return;
+                   } else if (isShowtimeConflict()) {
+                       JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "There is a conflict between the showtimes. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                       return;
+                   } else if (Float.parseFloat(moviePriceTF.getText()) <= 0){
+                       JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Movie price must be greater than 0. Please try again.", "Invalid Action", JOptionPane.WARNING_MESSAGE);
+                       return;
                    }
+                   
+                   int durationSpinnerValue = (int) durationSpinner.getValue();
                    
                    String posterPath = moviePosterPath;
                    String movieName = movieNameTF.getText();
@@ -432,13 +476,13 @@ public class AddMovieDialog extends JDialog {
                     String showDateTime1 = showDate + " " + showTime1;
                     startTimesStr.add(showDateTime1);
 
-                    if(showtime2ToggleButton.isSelected()) { 
+                    if(showtime2ToggleButton.isSelected() && durationSpinnerValue != 0) { 
                         String showTime2 = time2HoursComboBox.getSelectedItem() + ":" + time2MinsComboBox.getSelectedItem() + " " + time2AMPMComboBox.getSelectedItem();
                         String showDateTime2 = showDate + " " + showTime2;
                         startTimesStr.add(showDateTime2);
                     }
 
-                    if(showtime3ToggleButton.isSelected()) {
+                    if(showtime3ToggleButton.isSelected() && showtime2ToggleButton.isSelected() && durationSpinnerValue != 0) {
                         String showTime3 = time3HoursComboBox.getSelectedItem() + ":" + time3MinutesComboBox.getSelectedItem() + " " + time3AMPMComboBox.getSelectedItem();
                         String showDateTime3 = showDate + " " + showTime3;
                         startTimesStr.add(showDateTime3);
@@ -508,7 +552,12 @@ public class AddMovieDialog extends JDialog {
         
         boolean isGenre1Valid = genre1ComboBox.getSelectedItem() != "Select Genre";
         int durationSpinnerValue = (int) durationSpinner.getValue();
-        
+           
+        return !(movieNameTF.getText().isEmpty() || moviePriceTF.getText().isEmpty() || moviePosterPath.equals(Helper.DEFAULT_MOVIE_POSTER_PATH)) && isGenre1Valid && durationSpinnerValue != 0;
+    }
+    
+    private boolean isShowtimeConflict() {
+        int durationSpinnerValue = (int) durationSpinner.getValue();
         ArrayList<String> startTimesStr = new ArrayList<>();
 
         //For Showtime 1
@@ -540,6 +589,6 @@ public class AddMovieDialog extends JDialog {
             System.out.println("No conflict between the showtimes.");
         }
         
-        return !(movieNameTF.getText().isEmpty() || moviePriceTF.getText().isEmpty()) && isGenre1Valid && durationSpinnerValue != 0 && !isConflict;
+        return isConflict;
     }
 }

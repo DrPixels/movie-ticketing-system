@@ -61,6 +61,7 @@ public class MonthlyWeeklyReportDialog extends JDialog {
 	}
 
 	public MonthlyWeeklyReportDialog() {
+            setResizable(false);
 		getContentPane().setBackground(new Color(55, 65, 81));
 		setTitle("Monthly/Weekly Report");
 		setBounds(100, 100, 995, 600);
@@ -76,7 +77,7 @@ public class MonthlyWeeklyReportDialog extends JDialog {
 		date1DayComboBox.setBounds(550, 55, 50, 25);
 		
 		date1YearComboBox = new JComboBox<>();
-		date1YearComboBox.setBounds(610, 55, 60, 25);
+		date1YearComboBox.setBounds(610, 55, 70, 25);
                 
                 Helper.setupDateComboBoxes(date1MonthComboBox, date1DayComboBox, date1YearComboBox);
 		
@@ -100,7 +101,7 @@ public class MonthlyWeeklyReportDialog extends JDialog {
 		date2DayComboBox.setBounds(845, 55, 50, 25);	
 		
 		date2YearComboBox = new JComboBox<>();
-		date2YearComboBox.setBounds(905, 55, 60, 25);	
+		date2YearComboBox.setBounds(905, 55, 70, 25);	
                 
                 Helper.setupDateComboBoxes(date2MonthComboBox, date2DayComboBox, date2YearComboBox);
                 
@@ -127,8 +128,12 @@ public class MonthlyWeeklyReportDialog extends JDialog {
                         String toDateStr = monthTo + " " + dayTo + ", " + yearTo;
                         to = Helper.dateStringToLocalDate(toDateStr);
                         
-                        dailyReportMainPanel.removeAll();
+                        if(from.isBefore(to) || from.isEqual(to)) {
+                            dailyReportMainPanel.removeAll();
                         addElementsToDailyMainPanel();
+                        } else {
+                            JOptionPane.showMessageDialog(Helper.getCurrentFrame(), "Invalid: 'From' date is not before 'To' date.", "Successful Action", JOptionPane.WARNING_MESSAGE);
+                        }
                     }
                 });
 		
@@ -167,7 +172,7 @@ private JPanel createTheaterMoviePanel(Theater theaterData) {
     	theatreTicketsSold.setBounds(20, 46, 110, 25);
     	theatreTicketsSold.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	
-    	JLabel theaterRevenue = new JLabel("₱ " + theaterSalesData.getTotalTickets());
+    	JLabel theaterRevenue = new JLabel("₱ " + theaterSalesData.getTotalAmount());
     	theaterRevenue.setBounds(20, 76, 110, 25);
     	theaterRevenue.setFont(new Font("Segoe UI", Font.ITALIC, 14));
     	

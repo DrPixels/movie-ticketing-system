@@ -1,16 +1,22 @@
 package admingui;
 
 import Database.AdminDatabaseManager;
+import Model.Movie;
 import Model.StaffEmployee;
 import helper.Helper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.util.*;
 
 public class ManageStaff extends JPanel {
 
@@ -75,6 +81,25 @@ public class ManageStaff extends JPanel {
     	searchField = new JTextField();
     	searchField.setBounds(780, 120, 190, 30);
     	searchField.setColumns(10);
+        
+               // Add DocumentListener to the search field
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterProducts();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterProducts();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filterProducts();
+            }
+        });
+        
     	
     	searchLabel = new JLabel("Search:");
     	searchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -86,9 +111,25 @@ public class ManageStaff extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 // Create a custom dialog
             	ArchivedStaffDialog archiveStaffDialog = new ArchivedStaffDialog();
-
+                archiveStaffDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             	archiveStaffDialog.setLocationRelativeTo(Helper.getCurrentFrame()); // Center the dialog relative to the frame
             	archiveStaffDialog.setVisible(true);
+                
+                
+                archiveStaffDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                            staffMainPanel.removeAll();
+                            ArrayList<StaffEmployee> newStaffEmployees = AdminDatabaseManager.retrieveStaffEmployees();
+                            addStaffToPanel(newStaffEmployees);
+
+                            revalidate();
+                            repaint();
+                            
+                            }
+                        });
+
+                
             }
     	});
     	restoreStaffButton.setForeground(Color.WHITE);
@@ -186,6 +227,23 @@ public class ManageStaff extends JPanel {
             JPanel newPanel = createStaffPanel(staffEmployee);  // Create custom panels
             staffMainPanel.add(newPanel);
     	}
+    }
+    
+    private void filterProducts() {
+        String searchText = searchField.getText().toLowerCase();
+        staffMainPanel.removeAll(); // Remove all products from the container
+        
+        for (StaffEmployee staffEmployee: staffEmployees) {
+            String staffFullName = staffEmployee.getFirstName() + " " + staffEmployee.getMiddleName() + " " + staffEmployee.getLastName();
+            if(staffFullName.toLowerCase().contains(searchText)) {
+                JPanel newPanel = createStaffPanel(staffEmployee);  // Create custom panels
+                staffMainPanel.add(newPanel);
+            }
+            
+    	}
+
+        staffMainPanel.revalidate();
+        staffMainPanel.repaint();
     }
 
 
